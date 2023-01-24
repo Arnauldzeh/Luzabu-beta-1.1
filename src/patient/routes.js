@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { createNewPatient } = require("./controller");
+const { createNewPatient, authenticatePatient } = require("./controller");
 
 //Signup route
 router.post("/signup", async (req, res) => {
@@ -77,4 +77,26 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+//Signin
+
+router.post("/signin", async (req, res) => {
+  try {
+    let { cardId, password } = req.body;
+    cardId = cardId.trim();
+    password = password.trim();
+    //validation
+    if (!(cardId && password)) {
+      throw Error("L'un des champs est vide");
+    }
+
+    //authenticate patient with the infos provided
+    const authenticatedPatient = await authenticatePatient({
+      cardId,
+      password,
+    });
+    res.status(200).json(authenticatedPatient);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
 module.exports = router;
