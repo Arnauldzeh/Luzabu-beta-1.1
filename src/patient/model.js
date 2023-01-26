@@ -45,10 +45,10 @@ const PatientSchema = new Schema({
     required: true,
   },
   token: {
-    String,
+    type: String,
   },
 });
 
 const Patient = mongoose.model("Patients", PatientSchema);
 
-module.exports = Patient;
+module.exports = { Patient };

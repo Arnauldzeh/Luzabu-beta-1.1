@@ -1,4 +1,5 @@
-const Patient = require("./model");
+const { Patient } = require("./model");
+const { Identifiant } = require("../admin/models");
 const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
 
@@ -45,12 +46,22 @@ const createNewPatient = async (data) => {
       profession,
       nationality,
       phoneNumber,
+      token,
     } = data;
 
+    //checking if CardId belongs to the system
     //checking if patient already exists
+    //checking if CardId is already used
+    const existingNewId = await Identifiant.findOne({ cardId });
     const existingPatient = await Patient.findOne({ email });
-    if (existingPatient) {
+    const existingcardId = await Patient.findOne({ cardId });
+
+    if (!existingNewId) {
+      throw Error("L'identifiants n'existe pas");
+    } else if (existingPatient) {
       throw Error("Un Patient avec cet email exist deja");
+    } else if (existingcardId) {
+      throw Error("Un Patient avec cet Identifiant exist deja");
     }
 
     //hash password with the cryptage function in the services folder
@@ -65,6 +76,7 @@ const createNewPatient = async (data) => {
       profession,
       nationality,
       phoneNumber,
+      token,
     });
     const createdPatient = await newPatient.save();
     return createdPatient;
