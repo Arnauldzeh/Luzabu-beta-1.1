@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { createNewPatient, authenticatePatient } = require("./controller");
+const {
+  createNewPatient,
+  authenticatePatient,
+  getProfile,
+} = require("./controller");
+const { verifyToken } = require("../middleware/auth");
 
 //Signup route
 router.post("/signup", async (req, res) => {
@@ -22,7 +27,7 @@ router.post("/signup", async (req, res) => {
     firstName = firstName.trim();
     lastName = lastName.trim();
     email = email.trim();
-    password = password.trim();
+    password = password;
     cardId = cardId.trim();
     sex = sex.trim();
     profession = profession.trim();
@@ -99,4 +104,8 @@ router.post("/signin", async (req, res) => {
     res.status(400).send(error.message);
   }
 });
+
+//Consulter profile
+router.get("/profile", verifyToken, getProfile);
+
 module.exports = router;

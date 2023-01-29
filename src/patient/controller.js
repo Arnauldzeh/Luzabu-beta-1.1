@@ -2,6 +2,7 @@ const { Patient } = require("./model");
 const { Identifiant } = require("../admin/models");
 const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
+const jwt = require("jsonwebtoken");
 
 const authenticatePatient = async (data) => {
   try {
@@ -85,4 +86,32 @@ const createNewPatient = async (data) => {
   }
 };
 
-module.exports = { createNewPatient, authenticatePatient };
+//Afficher profile
+const getProfile = async (req, res) => {
+  try {
+    const token =
+      req.body.token || req.query.token || req.headers["x-access-token"];
+    if (!token) {
+      return res.status(401).send("Jeton d'authentification requis");
+    }
+    const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
+    const patient = await Patient.findById({ _id: decodedToken.patientId });
+    if (!patient) {
+      return res.status(404).send("Patient non trouvé");
+    }
+    return res.status(200).json(patient);
+  } catch (error) {
+    return res.status(401).send("Token invalide");
+  }
+};
+
+//Mettre à jour le profile patient
+const editProfile = async () => {};
+
+//Exporter les fonctions
+module.exports = {
+  createNewPatient,
+  authenticatePatient,
+  getProfile,
+  editProfile,
+};
