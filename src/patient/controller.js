@@ -106,7 +106,7 @@ const getProfile = async (req, res) => {
 };
 
 //Mettre à jour le profile patient
-const editProfile = async () => {};
+const editProfile = async (data) => {};
 
 //Exporter les fonctions
 module.exports = {
