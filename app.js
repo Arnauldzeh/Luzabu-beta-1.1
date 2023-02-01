@@ -1,9 +1,9 @@
 //import database configuration
-require("./config/db");
+require("../Luzabu/src/config/db");
 const express = require("express");
 const bodyParser = express.json;
 const cors = require("cors");
-const routes = require("./routes");
+const routes = require("../Luzabu/src/routes");
 
 //create server app
 const app = express();
