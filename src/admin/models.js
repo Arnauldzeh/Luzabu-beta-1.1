@@ -10,4 +10,12 @@ const IdSchema = new Schema({
 
 const Identifiant = mongoose.model("Identifiants", IdSchema);
 
+//admin
+const admin = new Schema({
+  firstName: {},
+  lastName: {},
+  email: {},
+  password: {},
+});
+
 module.exports = { Identifiant };

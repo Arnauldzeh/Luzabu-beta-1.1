@@ -44,6 +44,10 @@ const PatientSchema = new Schema({
     type: String,
     required: true,
   },
+  isBlocked: {
+    type: Boolean,
+    required: false,
+  },
   token: {
     type: String,
   },

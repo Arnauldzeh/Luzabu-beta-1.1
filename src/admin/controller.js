@@ -12,7 +12,6 @@ const createNewcardId = async (data) => {
     if (existingcardId) {
       throw Error("Cet Identifiant exist deja");
     }
-    //hash password with the cryptage function in the services folder
     const newcardId = new Identifiant({
       cardId,
     });

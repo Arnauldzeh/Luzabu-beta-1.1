@@ -4,6 +4,7 @@ const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
 const jwt = require("jsonwebtoken");
 
+//signin
 const authenticatePatient = async (data) => {
   try {
     const { cardId, password } = data;
@@ -16,7 +17,7 @@ const authenticatePatient = async (data) => {
     }
 
     const hashedPassword = fetchedPatient.password;
-    //utiliser la fonction du controller pour comparer les mot de passe
+    //utiliser la fonction du service pour comparer les mot de passe
     const passwordMatch = await verifyHashedData(password, hashedPassword);
     if (!passwordMatch) {
       throw Error("Mot de passe invalide!!");
@@ -92,7 +93,7 @@ const getProfile = async (req, res) => {
     const token =
       req.body.token || req.query.token || req.headers["x-access-token"];
     if (!token) {
-      return res.status(401).send("Jeton d'authentification requis");
+      return res.status(401).send("Authentication token is required");
     }
     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
     const patient = await Patient.findById({ _id: decodedToken.patientId });
@@ -106,7 +107,61 @@ const getProfile = async (req, res) => {
 };
 
 //Mettre à jour le profile patient
-const editProfile = async (data) => {};
+const editProfile = async (req, res) => {
+  try {
+    const token =
+      req.body.token || req.query.token || req.headers["x-access-token"];
+    if (!token) {
+      return res.status(401).send("Authentication token is required");
+    }
+    const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
+    const patient = await Patient.findById({ _id: decodedToken.patientId });
+    if (!patient) {
+      return res.status(404).send("Patient non trouvé");
+    }
+
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      sex,
+      profession,
+      nationality,
+      phoneNumber,
+    } = req.body;
+
+    if (firstName) {
+      patient.firstName = firstName;
+    }
+    if (lastName) {
+      patient.lastName = lastName;
+    }
+    if (email) {
+      patient.email = email;
+    }
+    if (password) {
+      patient.password = await cryptage(password);
+    }
+    if (sex) {
+      patient.sex = sex;
+    }
+    if (profession) {
+      patient.profession = profession;
+    }
+    if (nationality) {
+      patient.nationality = nationality;
+    }
+    if (phoneNumber) {
+      patient.phoneNumber = phoneNumber;
+    }
+
+    const updatedPatient = await patient.save();
+    return res.status(200).json(updatedPatient);
+  } catch (error) {
+    return res.status(401).send("Token invalide");
+  }
+};
 
 //Exporter les fonctions
 module.exports = {
