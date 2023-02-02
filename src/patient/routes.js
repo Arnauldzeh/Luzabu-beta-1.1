@@ -17,7 +17,6 @@ const { verifyToken } = require("../middleware/auth");
 router.post("/signup", validateSignup);
 
 //Signin
-
 router.post("/signin", validateSignin);
 
 //Consulter profile

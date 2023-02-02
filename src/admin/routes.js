@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { createNewcardId } = require("./controller");
+const { createNewcardId, bloquecardId } = require("./controller");
 
 //Ajouter une nouvelle carte de santé
 router.post("/cardId", async (req, res) => {
@@ -23,80 +23,29 @@ router.post("/cardId", async (req, res) => {
     res.status(400).send(error.message);
   }
 });
-
-//Ajouter un nouveau medecin dans le systeme
-router.post("/new_doctor", async (req, res) => {
+//bloquer un utilisateur(patient/medecin) par l'Id de la carte de santé
+router.post("/bloquecardId", async (req, res) => {
   try {
     //getting data from form body
-    let {
-      firstName,
-      lastName,
-      email,
-      password,
-      cardId,
-      sex,
-      profession,
-      nationality,
-      phoneNumber,
-    } = req.body;
+    let { cardId } = req.body;
 
-    //removing blank spaces
-    firstName = firstName.trim();
-    lastName = lastName.trim();
-    email = email.trim();
-    password = password;
     cardId = cardId.trim();
-    sex = sex.trim();
-    profession = profession.trim();
-    nationality = nationality.trim();
-    phoneNumber = phoneNumber.trim();
 
-    //data validation
-    //testing empty fields
-    if (
-      !(
-        firstName &&
-        lastName &&
-        email &&
-        password &&
-        cardId &&
-        sex &&
-        profession &&
-        nationality &&
-        phoneNumber
-      )
-    ) {
+    if (!cardId) {
       throw Error("Un ou plusieurs champs vides!!!");
-      //testing email,names,password
-      //name test
-    } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
-      throw Error("Un des noms est invalide!!!");
-    } else if (
-      !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/.test(
-        email
-      )
-    ) {
-      throw Error("l'email entré est invalide");
-    } else if (password.length < 8) {
-      throw Error("Le mot de passe doit contenir au moins de 8 caractères");
     } else {
       // good credentials, create new user function in controller file
-      const newPatient = await createNewPatient({
-        firstName,
-        lastName,
-        email,
-        password,
+      const newcardId = await bloquecardId({
         cardId,
-        sex,
-        profession,
-        nationality,
-        phoneNumber,
       });
-      res.status(200).json(newPatient);
+      res.status(200).json(newcardId);
     }
   } catch (error) {
     res.status(400).send(error.message);
   }
 });
+
+//Ajouter un nouveau medecin dans le systeme
+router.post("/new_doctor", async (req, res) => {});
 
 module.exports = router;

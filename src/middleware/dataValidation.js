@@ -9,7 +9,7 @@ const validateProfile = [
   check("firstName").optional().isLength({ min: 2 }),
   check("lastName").optional().isLength({ min: 2 }),
   check("email").optional().isEmail(),
-  check("password").optional().isLength({ min: 6 }),
+  check("password").optional().isLength({ min: 8 }),
   check("sex").optional().isIn(["Male", "Female"]),
   check("profession").optional().isLength({ min: 2 }),
   check("nationality").optional().isLength({ min: 2 }),
