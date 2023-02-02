@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const PatientSchema = new Schema({
+const MedecinSchema = new Schema({
   firstName: {
     type: String,
     required: true,
@@ -23,7 +23,7 @@ const PatientSchema = new Schema({
     required: true,
     minlength: 8,
   },
-  cardId: {
+  matricule: {
     type: String,
     required: true,
     unique: true,
@@ -32,7 +32,11 @@ const PatientSchema = new Schema({
     type: String,
     required: true,
   },
-  profession: {
+  generalist: {
+    type: Boolean,
+    required: false,
+  },
+  specialist: {
     type: String,
     required: true,
   },
@@ -53,6 +57,6 @@ const PatientSchema = new Schema({
   },
 });
 
-const Patient = mongoose.model("Patients", PatientSchema);
+const Medecin = mongoose.model("Medecins", MedecinSchema);
 
-module.exports = { Patient };
+module.exports = { Medecin };

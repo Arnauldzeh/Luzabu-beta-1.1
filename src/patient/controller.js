@@ -1,5 +1,5 @@
 const { Patient } = require("./model");
-const { Identifiant } = require("../admin/models");
+const { Identifiant, bloquer } = require("../admin/models");
 const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
 const jwt = require("jsonwebtoken");
@@ -8,28 +8,30 @@ const jwt = require("jsonwebtoken");
 const authenticatePatient = async (data) => {
   try {
     const { cardId, password } = data;
-    const fetchedPatient = await Patient.findOne({
-      cardId,
-    });
+    const fetchedPatient = await Patient.findOne({ cardId });
+    const isBlockedcardId = await bloquer.findOne({ cardId });
 
-    if (!fetchedPatient) {
+    //checking if cardId is blocked
+    if (isBlockedcardId) {
+      throw Error("Access denied due to some reasons");
+    } else if (!fetchedPatient) {
       throw Error("L'Identifiants invalides!!");
+    } else {
+      const hashedPassword = fetchedPatient.password;
+      //utiliser la fonction du service pour comparer les mot de passe
+      const passwordMatch = await verifyHashedData(password, hashedPassword);
+      if (!passwordMatch) {
+        throw Error("Mot de passe invalide!!");
+      }
+
+      //si le mdp est bon, alors on crée le token en utilisant la fonction du service
+      const tokenData = { patientId: fetchedPatient._id, cardId };
+      const token = await createToken(tokenData);
+
+      //assign patient token to the etched patient data
+      fetchedPatient.token = token;
+      return fetchedPatient;
     }
-
-    const hashedPassword = fetchedPatient.password;
-    //utiliser la fonction du service pour comparer les mot de passe
-    const passwordMatch = await verifyHashedData(password, hashedPassword);
-    if (!passwordMatch) {
-      throw Error("Mot de passe invalide!!");
-    }
-
-    //si le mdp est bon, alors on crée le token en utilisant la fonction du service
-    const tokenData = { patientId: fetchedPatient._id, cardId };
-    const token = await createToken(tokenData);
-
-    //assign patient token to the etched patient data
-    fetchedPatient.token = token;
-    return fetchedPatient;
   } catch (error) {
     throw error;
   }

@@ -8,14 +8,14 @@ const IdSchema = new Schema({
   },
 });
 
-const Identifiant = mongoose.model("Identifiants", IdSchema);
-
-//admin
-const admin = new Schema({
-  firstName: {},
-  lastName: {},
-  email: {},
-  password: {},
+//Identifiants bloqué
+const bloquerSchema = new Schema({
+  cardId: {
+    type: String,
+  },
 });
 
-module.exports = { Identifiant };
+const Identifiant = mongoose.model("Identifiants", IdSchema);
+const bloquer = mongoose.model("bloqués", bloquerSchema);
+
+module.exports = { Identifiant, bloquer };
