@@ -30,7 +30,7 @@ const authenticatePatient = async (data) => {
 
       //assign patient token to the etched patient data
       fetchedPatient.token = token;
-      return fetchedPatient;
+      return token;
     }
   } catch (error) {
     throw error;
