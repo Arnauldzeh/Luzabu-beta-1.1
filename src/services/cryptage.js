@@ -1,9 +1,9 @@
 const bcrypt = require("bcrypt");
 
 //cryptage du mot de passe
-const cryptage = async (data, saltRounds = 10) => {
+const cryptage = async (req, res, saltRounds = 10) => {
   try {
-    const crypté = await bcrypt.hash(data, saltRounds);
+    const crypté = await bcrypt.hash(req, saltRounds);
     return crypté;
   } catch (error) {
     throw error;

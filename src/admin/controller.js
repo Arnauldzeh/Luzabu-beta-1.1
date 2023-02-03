@@ -16,7 +16,6 @@ const createNewcardId = async (data) => {
       cardId,
     });
     const createdcardId = await newcardId.save();
-    return createdcardId;
   } catch (error) {
     throw error;
   }

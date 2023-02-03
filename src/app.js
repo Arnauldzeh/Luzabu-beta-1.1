@@ -10,6 +10,7 @@ const app = express();
 
 //middlewares
 app.use(cors());
+app.use(express.json());
 app.use(bodyParser());
 app.use("/api/Beta_luzabu", routes);
 
