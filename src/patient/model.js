@@ -2,31 +2,22 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const PatientSchema = new Schema({
+  cardId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   firstName: {
     type: String,
     required: true,
-    minlength: 3,
   },
   lastName: {
     type: String,
     required: true,
   },
-  email: {
-    type: String,
+  birthdate: {
+    type: Date,
     required: true,
-    unique: true,
-    match:
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 8,
-  },
-  cardId: {
-    type: String,
-    required: true,
-    unique: true,
   },
   sex: {
     type: String,
@@ -40,16 +31,21 @@ const PatientSchema = new Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String,
+    required: true,
+  },
   phoneNumber: {
     type: String,
     required: true,
   },
-  isBlocked: {
-    type: Boolean,
-    required: false,
-  },
-  token: {
+  profilePicture: {
     type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
   },
 });
 

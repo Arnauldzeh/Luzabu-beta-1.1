@@ -16,6 +16,6 @@ const bloquerSchema = new Schema({
 });
 
 const Identifiant = mongoose.model("Identifiants", IdSchema);
-const bloquer = mongoose.model("bloqués", bloquerSchema);
+const bloquer = mongoose.model("patientBloqués", bloquerSchema);
 
 module.exports = { Identifiant, bloquer };

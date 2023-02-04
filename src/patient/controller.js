@@ -3,89 +3,94 @@ const { Identifiant, bloquer } = require("../admin/models");
 const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
 const jwt = require("jsonwebtoken");
+const {
+  validateProfile,
+  validateSignup,
+  validateSignin,
+} = require("../middleware/dataValidation");
 
 //signin
-const authenticatePatient = async (data) => {
+const authenticatePatient = async (req, res) => {
+  await validateSignin(req);
   try {
-    const { cardId, password } = data;
+    const { cardId, password } = req.body;
     const fetchedPatient = await Patient.findOne({ cardId });
     const isBlockedcardId = await bloquer.findOne({ cardId });
 
-    //checking if cardId is blocked
     if (isBlockedcardId) {
-      throw Error("Access denied due to some reasons");
+      return res.status(401).json({
+        message: "Access denied due to some reasons!!",
+      });
     } else if (!fetchedPatient) {
-      throw Error("L'Identifiants invalides!!");
+      return res.status(400).json({ message: "Invalid credentials" });
     } else {
       const hashedPassword = fetchedPatient.password;
-      //utiliser la fonction du service pour comparer les mot de passe
       const passwordMatch = await verifyHashedData(password, hashedPassword);
       if (!passwordMatch) {
-        throw Error("Mot de passe invalide!!");
+        return res.status(400).json({ message: "Invalid credentials" });
       }
-
-      //si le mdp est bon, alors on crée le token en utilisant la fonction du service
       const tokenData = { patientId: fetchedPatient._id, cardId };
       const token = await createToken(tokenData);
 
-      //assign patient token to the etched patient data
-      fetchedPatient.token = token;
-      return token;
+      return res.status(200).json({
+        token,
+        message: "User login successfully",
+      });
     }
   } catch (error) {
-    throw error;
+    return res.status(500).json({ error });
   }
 };
 
 //Create neww patient
-const createNewPatient = async (data) => {
+const createNewPatient = async (req, res, next) => {
+  await validateSignup(req);
   try {
     const {
+      cardId,
       firstName,
       lastName,
-      email,
-      password,
-      cardId,
+      birthdate,
       sex,
       profession,
       nationality,
+      address,
       phoneNumber,
-      token,
-    } = data;
+      profilePicture,
+      password,
+    } = req.body;
 
     //checking if CardId belongs to the system
     //checking if patient already exists
     //checking if CardId is already used
     const existingNewId = await Identifiant.findOne({ cardId });
-    const existingPatient = await Patient.findOne({ email });
-    const existingcardId = await Patient.findOne({ cardId });
+    const existingPatient = await Patient.findOne({ cardId });
 
     if (!existingNewId) {
-      throw Error("L'identifiants n'existe pas");
+      return res.status(400).json({ error: "Id card does'nt exist" });
     } else if (existingPatient) {
-      throw Error("Un Patient avec cet email exist deja");
-    } else if (existingcardId) {
-      throw Error("Un Patient avec cet Identifiant exist deja");
+      return res.status(400).json({ error: "Id card already used" });
     }
 
     //hash password with the cryptage function in the services folder
     const hashedPassword = await cryptage(password);
     const newPatient = new Patient({
+      cardId,
       firstName,
       lastName,
-      email,
-      password: hashedPassword,
-      cardId,
+      birthdate,
       sex,
       profession,
       nationality,
+      address,
       phoneNumber,
-      token,
+      profilePicture,
+      password: hashedPassword,
     });
-    const createdPatient = await newPatient.save();
-    return createdPatient;
+    await newPatient.save();
+    res.status(201).json({ message: "User registered successfully!!" });
   } catch (error) {
-    throw error;
+    return res.status(500).json({ error });
   }
 };
 
@@ -95,16 +100,16 @@ const getProfile = async (req, res) => {
     const token =
       req.body.token || req.query.token || req.headers["x-access-token"];
     if (!token) {
-      return res.status(401).send("Authentication token is required");
+      return res.status(401).send("Authentication token is required!!");
     }
     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
     const patient = await Patient.findById({ _id: decodedToken.patientId });
     if (!patient) {
-      return res.status(404).send("Patient non trouvé");
+      return res.status(404).send("No user found!!");
     }
     return res.status(200).json(patient);
   } catch (error) {
-    return res.status(401).send("Token invalide");
+    return res.status(401).send("Invalid token provided");
   }
 };
 
@@ -114,23 +119,25 @@ const editProfile = async (req, res) => {
     const token =
       req.body.token || req.query.token || req.headers["x-access-token"];
     if (!token) {
-      return res.status(401).send("Authentication token is required");
+      return res.status(401).send("Authentication token is required!!");
     }
     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
     const patient = await Patient.findById({ _id: decodedToken.patientId });
     if (!patient) {
-      return res.status(404).send("Patient non trouvé");
+      return res.status(404).json({ error: "User not found!!" });
     }
 
     const {
       firstName,
       lastName,
-      email,
-      password,
+      birthdate,
       sex,
       profession,
       nationality,
+      address,
       phoneNumber,
+      profilePicture,
+      password,
     } = req.body;
 
     if (firstName) {
@@ -139,8 +146,8 @@ const editProfile = async (req, res) => {
     if (lastName) {
       patient.lastName = lastName;
     }
-    if (email) {
-      patient.email = email;
+    if (birthdate) {
+      patient.birthdate = birthdate;
     }
     if (password) {
       patient.password = await cryptage(password);
@@ -154,14 +161,20 @@ const editProfile = async (req, res) => {
     if (nationality) {
       patient.nationality = nationality;
     }
+    if (address) {
+      patient.address = address;
+    }
     if (phoneNumber) {
       patient.phoneNumber = phoneNumber;
     }
+    if (profilePicture) {
+      patient.profilePicture = profilePicture;
+    }
 
     const updatedPatient = await patient.save();
-    return res.status(200).json(updatedPatient);
+    return res.status(200).json("Profil updated successfully");
   } catch (error) {
-    return res.status(401).send("Token invalide");
+    return res.status(404).json("Invalid token");
   }
 };
 
