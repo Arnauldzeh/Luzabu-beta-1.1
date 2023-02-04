@@ -11,13 +11,6 @@ const MedecinSchema = new Schema({
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    match:
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  },
   password: {
     type: String,
     required: true,
@@ -28,33 +21,30 @@ const MedecinSchema = new Schema({
     required: true,
     unique: true,
   },
+   phoneNumber: {
+    type: String,
+    required: true,
+  },
   sex: {
     type: String,
     required: true,
   },
-  generalist: {
-    type: Boolean,
-    required: false,
-  },
-  specialist: {
+    nationality: {
     type: String,
     required: true,
   },
-  nationality: {
+    birthdate: {
+    type: String,
+    required: true,
+  };,
+    spacility: {
     type: String,
     required: true,
   },
-  phoneNumber: {
+    autorisation: {
     type: String,
     required: true,
-  },
-  isBlocked: {
-    type: Boolean,
-    required: false,
-  },
-  token: {
-    type: String,
-  },
+  }
 });
 
 const Medecin = mongoose.model("Medecins", MedecinSchema);
