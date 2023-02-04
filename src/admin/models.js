@@ -15,7 +15,15 @@ const bloquerSchema = new Schema({
   },
 });
 
+//matricule medecin
+const matriculeSchema = new Schema({
+  matricule: {
+    type: String,
+  },
+});
+
 const Identifiant = mongoose.model("Identifiants", IdSchema);
 const bloquer = mongoose.model("patientBloqués", bloquerSchema);
+const Matricule = mongoose.model("Matricules", matriculeSchema);
 
-module.exports = { Identifiant, bloquer };
+module.exports = { Identifiant, bloquer, Matricule };

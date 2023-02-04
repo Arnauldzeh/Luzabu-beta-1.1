@@ -133,7 +133,7 @@ const validateSignin = async (req, res) => {
       return res.status(400).json({ error: "Invalid credentials" });
     }
   } catch (error) {
-    res.status(400).send(error.message);
+    return res.status(400).send(error.message);
   }
 };
 
@@ -145,10 +145,25 @@ const validatecardId = async (req, res) => {
     cardId = cardId.trim();
 
     if (!cardId) {
-      res.status(200).json({ error: "Empty credentials" });
+      return res.status(200).json({ error: "Empty credentials" });
     }
   } catch (error) {
-    res.status(400).send(error.message);
+    return res.status(400).send(error.message);
+  }
+};
+
+const validateMatricule = async (req, res) => {
+  try {
+    //getting data from form body
+    let { matricule } = req.body;
+
+    matricule = matricule.trim();
+
+    if (!matricule) {
+      return res.status(200).json({ error: "Empty credentials" });
+    }
+  } catch (error) {
+    return res.status(400).send(error.message);
   }
 };
 
@@ -173,4 +188,5 @@ module.exports = {
   validateSignin,
   validatecardId,
   validatebloquecardId,
+  validateMatricule,
 };

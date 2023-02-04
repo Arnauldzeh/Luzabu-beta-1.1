@@ -1,62 +1,66 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const MedecinSchema = new Schema({
-  firstName: {
+//Identifiant Médecin
+const IdSchema = new Schema({
+  matricule: {
+    type: String,
+    required: true,
+  },
+  motdepasse: {
+    type: String,
+  },
+  nom_Med: {
     type: String,
     required: true,
     minlength: 3,
   },
-  lastName: {
+  prenom_med: {
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    match:
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 8,
-  },
-  matricule: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  sex: {
+  date_naissance_Med: {
     type: String,
     required: true,
   },
-  generalist: {
-    type: Boolean,
-    required: false,
-  },
-  specialist: {
+  sexe_Med: {
     type: String,
     required: true,
   },
-  nationality: {
+  nationality_Med: {
     type: String,
     required: true,
   },
-  phoneNumber: {
+  password_Med: {
     type: String,
     required: true,
   },
-  isBlocked: {
-    type: Boolean,
-    required: false,
+  telephone_Med: {
+    type: String,
+    required: true,
   },
-  token: {
+  generaliste: {
+    type: String,
+    required: true,
+  },
+  specialiste: {
+    type: String,
+    required: true,
+  },
+
+  certificat_Etude: {
+    type: String,
+    required: true,
+  },
+  autorisation_privee: {
+    type: String,
+    required: true,
+  },
+  nom_hopital: {
     type: String,
   },
 });
 
-const Medecin = mongoose.model("Medecins", MedecinSchema);
+const Medecin = mongoose.model("Medecins", IdSchema);
 
 module.exports = { Medecin };
