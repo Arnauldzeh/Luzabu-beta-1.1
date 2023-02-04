@@ -6,7 +6,7 @@ const {
   getProfile,
   editProfile,
 } = require("./controller");
-const { validateProfile } = require("../middleware/dataValidation");
+// const { validateProfile } = require("../middleware/dataValidation");
 
 const { verifyToken } = require("../middleware/auth");
 
@@ -20,6 +20,6 @@ router.post("/signin", authenticatePatient);
 router.get("/profile", verifyToken, getProfile);
 
 // //Mettre à jour son profile
-router.post("/editProfile", verifyToken, validateProfile, editProfile);
+router.post("/editProfile", verifyToken, editProfile);
 
 module.exports = router;

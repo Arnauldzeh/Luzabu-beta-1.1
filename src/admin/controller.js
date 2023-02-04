@@ -1,7 +1,12 @@
 const { Identifiant, bloquer } = require("./models");
+const {
+  validatecardId,
+  validatebloquecardId,
+} = require("../middleware/dataValidation");
 
 //Create neww patient
 const createNewcardId = async (req, res) => {
+  await validatecardId(req);
   try {
     const { cardId } = req.body;
 
@@ -10,13 +15,13 @@ const createNewcardId = async (req, res) => {
     const existingcardId = await Identifiant.findOne({ cardId });
 
     if (existingcardId) {
-      throw Error("cardId already exist");
+      return res.status(404).json({ error: "cardId already exist" });
     }
     const newcardId = new Identifiant({
       cardId,
     });
     const createdcardId = await newcardId.save();
-    return res.status(200).json("cardId added successfully");
+    return res.status(200).json({ message: "cardId added successfully" });
   } catch (error) {
     throw error;
   }
@@ -24,6 +29,7 @@ const createNewcardId = async (req, res) => {
 
 //block a user
 const bloquecardId = async (req, res) => {
+  await validatebloquecardId(req);
   try {
     const { cardId } = req.body;
 
@@ -33,15 +39,15 @@ const bloquecardId = async (req, res) => {
     //checking if patient is already blocked
     const isBlockedcardId = await bloquer.findOne({ cardId });
     if (!existingcardId) {
-      return res.status(404).json("Id not found");
+      return res.status(404).json({ error: "Id not found" });
     } else if (isBlockedcardId) {
-      return res.status(200).json("Id already blocked");
+      return res.status(200).json({ message: "Id already blocked" });
     } else {
       const newcardId = new bloquer({
         cardId,
       });
       const blockedcardId = await newcardId.save();
-      return res.status(200).json("User blocked successfully");
+      return res.status(200).json({ message: "User blocked successfully" });
     }
   } catch (error) {
     throw error;

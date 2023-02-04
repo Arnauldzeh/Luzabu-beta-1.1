@@ -11,8 +11,8 @@ const {
 
 //signin
 const authenticatePatient = async (req, res) => {
+  await validateSignin(req);
   try {
-    await validateSignin(req);
     const { cardId, password } = req.body;
     const fetchedPatient = await Patient.findOne({ cardId });
     const isBlockedcardId = await bloquer.findOne({ cardId });
@@ -47,46 +47,45 @@ const createNewPatient = async (req, res, next) => {
   await validateSignup(req);
   try {
     const {
+      cardId,
       firstName,
       lastName,
-      email,
-      password,
-      cardId,
+      birthdate,
       sex,
       profession,
       nationality,
+      address,
       phoneNumber,
-      token,
+      profilePicture,
+      password,
     } = req.body;
 
     //checking if CardId belongs to the system
     //checking if patient already exists
     //checking if CardId is already used
     const existingNewId = await Identifiant.findOne({ cardId });
-    const existingPatient = await Patient.findOne({ email });
-    const existingcardId = await Patient.findOne({ cardId });
+    const existingPatient = await Patient.findOne({ cardId });
 
     if (!existingNewId) {
-      return res.status(400).json({ error: "Invalid Id card" });
+      return res.status(400).json({ error: "Id card does'nt exist" });
     } else if (existingPatient) {
-      return res.status(400).json({ error: "email already used" });
-    } else if (existingcardId) {
       return res.status(400).json({ error: "Id card already used" });
     }
 
     //hash password with the cryptage function in the services folder
     const hashedPassword = await cryptage(password);
     const newPatient = new Patient({
+      cardId,
       firstName,
       lastName,
-      email,
-      password: hashedPassword,
-      cardId,
+      birthdate,
       sex,
       profession,
       nationality,
+      address,
       phoneNumber,
-      token,
+      profilePicture,
+      password: hashedPassword,
     });
     await newPatient.save();
     res.status(201).json({ message: "User registered successfully!!" });
@@ -117,13 +116,10 @@ const getProfile = async (req, res) => {
 //Mettre à jour le profile patient
 const editProfile = async (req, res) => {
   try {
-    // await validateProfile(req);
     const token =
       req.body.token || req.query.token || req.headers["x-access-token"];
     if (!token) {
-      return res
-        .status(400)
-        .json({ error: "Authentication token is required!!" });
+      return res.status(401).send("Authentication token is required!!");
     }
     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
     const patient = await Patient.findById({ _id: decodedToken.patientId });
@@ -134,12 +130,14 @@ const editProfile = async (req, res) => {
     const {
       firstName,
       lastName,
-      email,
-      password,
+      birthdate,
       sex,
       profession,
       nationality,
+      address,
       phoneNumber,
+      profilePicture,
+      password,
     } = req.body;
 
     if (firstName) {
@@ -148,8 +146,8 @@ const editProfile = async (req, res) => {
     if (lastName) {
       patient.lastName = lastName;
     }
-    if (email) {
-      patient.email = email;
+    if (birthdate) {
+      patient.birthdate = birthdate;
     }
     if (password) {
       patient.password = await cryptage(password);
@@ -163,14 +161,20 @@ const editProfile = async (req, res) => {
     if (nationality) {
       patient.nationality = nationality;
     }
+    if (address) {
+      patient.address = address;
+    }
     if (phoneNumber) {
       patient.phoneNumber = phoneNumber;
+    }
+    if (profilePicture) {
+      patient.profilePicture = profilePicture;
     }
 
     const updatedPatient = await patient.save();
     return res.status(200).json("Profil updated successfully");
   } catch (error) {
-    return res.status(200).json("Invalid token");
+    return res.status(404).json("Invalid token");
   }
 };
 
