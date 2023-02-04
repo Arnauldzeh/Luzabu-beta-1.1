@@ -1,52 +1,66 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const MedecinSchema = new Schema({
-  firstName: {
+//Identifiant Médecin
+const IdSchema = new Schema({
+  matricule: {
+    type: String,
+    required: true,
+  },
+  motdepasse: {
+    type: String,
+  },
+  nom_Med: {
     type: String,
     required: true,
     minlength: 3,
   },
-  lastName: {
+  prenom_med: {
     type: String,
     required: true,
   },
-  password: {
-    type: String,
-    required: true,
-    minlength: 8,
-  },
-  matricule: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-   phoneNumber: {
+  date_naissance_Med: {
     type: String,
     required: true,
   },
-  sex: {
+  sexe_Med: {
     type: String,
     required: true,
   },
-    nationality: {
+  nationality_Med: {
     type: String,
     required: true,
   },
-    birthdate: {
-    type: String,
-    required: true,
-  };,
-    spacility: {
+  password_Med: {
     type: String,
     required: true,
   },
-    autorisation: {
+  telephone_Med: {
     type: String,
     required: true,
-  }
+  },
+  generaliste: {
+    type: String,
+    required: true,
+  },
+  specialiste: {
+    type: String,
+    required: true,
+  },
+
+  certificat_Etude: {
+    type: String,
+    required: true,
+  },
+  autorisation_privee: {
+    type: String,
+    required: true,
+  },
+  nom_hopital: {
+    type: String,
+  },
 });
 
-const Medecin = mongoose.model("Medecins", MedecinSchema);
+const Medecin = mongoose.model("Medecins", IdSchema);
 
 module.exports = { Medecin };
