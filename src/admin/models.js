@@ -31,7 +31,18 @@ const bloquerSchema = new Schema({
   },
 });
 
-const Administrateurs = mongoose.model("Administrateurs", IdSchema);
-const bloquer = mongoose.model("Bloques", bloquerSchema);
+//Identifiants de la carte
+const Carte = new Schema({
+    idCarte: {
+        type: String,
+        required: true
+    },
+    statut: String,
+    idPatient: String,
+})
 
-module.exports = { Identifiant, bloquer };
+const Administrateurs = mongoose.model("Administrateurs", IdSchema);
+const Carte = mongoose.model("Cartes", Carte);
+const Bloquer = mongoose.model("Bloques", bloquerSchema);
+
+module.exports = { Identifiant, Carte, Bloquer };
