@@ -1,6 +1,17 @@
 onst mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const ProfilMedical = Schema({
+    taille: String,
+    poids: String,
+    groupSanguin: String,
+    allergies: [String],
+    maladieChronique: [String],
+    antecedentFamilliaux: [String],
+    contactUrgent: [String],
+    age: String,
+});
+
 const Consultation = Schema({
     temperature: String,
     tensionArterielle: String,
@@ -80,7 +91,8 @@ const Radiologie = Schema({
 
 const Carnet = new Schema({
     date: Date.now(),
-    idCarnet: ObjectId,
+    idCarnet: Mongoose.id.ObjectId,
+    idCarte: String,
     consultation: Consultation,
     examens: Examen,
     resultatsLabo: ResultatsLabo,
@@ -90,5 +102,6 @@ const Carnet = new Schema({
 });
 
 const Carnet = mongoose.model("Carnets", Carnet);
+const ProfilMedical = mongoose.model("Profile Medical", ProfilMedical);
 
-module.exports = { Carnet };
+module.exports = { Carnet, ProfilMedical };
