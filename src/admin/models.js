@@ -1,10 +1,23 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-//Identifiant Patients
+//Identifiants Admin
 const IdSchema = new Schema({
-  cardId: {
+  lastName: {
     type: String,
+    required : true
+  },
+  firstName: {
+    type: String,
+    required: true
+  },
+  userName: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
   },
 });
 
@@ -13,9 +26,12 @@ const bloquerSchema = new Schema({
   cardId: {
     type: String,
   },
+  matricule:{
+    type: String,
+  },
 });
 
-const Identifiant = mongoose.model("Identifiants", IdSchema);
-const bloquer = mongoose.model("patientBloqués", bloquerSchema);
+const Administrateurs = mongoose.model("Administrateurs", IdSchema);
+const bloquer = mongoose.model("Bloques", bloquerSchema);
 
 module.exports = { Identifiant, bloquer };
