@@ -1,7 +1,7 @@
 onst mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const ProfilMedical = Schema({
+const ProfilMedical =  new Schema({
     taille: String,
     poids: String,
     groupSanguin: String,
@@ -12,7 +12,7 @@ const ProfilMedical = Schema({
     age: String,
 });
 
-const Consultation = Schema({
+const Consultation = new Schema({
     temperature: String,
     tensionArterielle: String,
     symptomes: String,
@@ -20,7 +20,7 @@ const Consultation = Schema({
     date: Date.now()
 });
 
-const Examen = Schema({
+const Examen = new Schema({
     provenance: {
         type: String,
         required: true
@@ -38,7 +38,7 @@ const Examen = Schema({
     date: Date.now(),
 });
 
-const Ordonnance = Schema({
+const Ordonnance = new Schema({
     medicaments: {
         nom: String,
         quantite: Number,
@@ -55,7 +55,7 @@ const Ordonnance = Schema({
     },
 });
 
-const ResultatsLabo = Schema({
+const ResultatsLabo = new Schema({
     resultats: {
         type: String,
         required: true
@@ -71,7 +71,7 @@ const ResultatsLabo = Schema({
     date: Date.now(),
 });
 
-const Radiologie = Schema({
+const Radiologie = new Schema({
     resultats: {
         type: String,
         required: true
