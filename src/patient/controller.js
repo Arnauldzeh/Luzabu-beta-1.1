@@ -1,20 +1,16 @@
 const { Patient } = require("./model");
-const { Identifiant, bloquer } = require("../admin/models");
+const { Carte, Bloquer } = require("../admin/models");
 const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
 const jwt = require("jsonwebtoken");
-const {
-  validateProfile,
-  validateSignup,
-  validateSignin,
-} = require("../middleware/dataValidation");
+const { validateProfile, validateSignup, validateSignin } = require("../middleware/dataValidation");
 
 //Create neww patient
 const createNewPatient = async (req, res, next) => {
   await validateSignup(req);
   try {
     const {
-      cardId,
+      idCarte,
       firstName,
       lastName,
       birthdate,
@@ -27,11 +23,11 @@ const createNewPatient = async (req, res, next) => {
       password,
     } = req.body;
 
-    //checking if CardId belongs to the system
+    //checking if Carte id belongs to the system
+    //checking if Carte id is already used
+    const existingNewId = await Carte.findOne({ idCarte });
     //checking if patient already exists
-    //checking if CardId is already used
-    const existingNewId = await Identifiant.findOne({ cardId });
-    const existingPatient = await Patient.findOne({ cardId });
+    const existingPatient = await Patient.findOne({ idCarte });
 
     if (!existingNewId) {
       return res.status(400).json({ error: "Id card does'nt exist" });
@@ -42,7 +38,7 @@ const createNewPatient = async (req, res, next) => {
     //hash password with the cryptage function in the services folder
     const hashedPassword = await cryptage(password);
     const newPatient = new Patient({
-      cardId,
+      idCarte,
       firstName,
       lastName,
       birthdate,
@@ -65,9 +61,9 @@ const createNewPatient = async (req, res, next) => {
 const authenticatePatient = async (req, res) => {
   await validateSignin(req);
   try {
-    const { cardId, password } = req.body;
-    const fetchedPatient = await Patient.findOne({ cardId });
-    const isBlockedcardId = await bloquer.findOne({ cardId });
+    const { idCarte, password } = req.body;
+    const fetchedPatient = await Patient.findOne({ idCarte });
+    const isBlockedcardId = await Bloquer.findOne({ idCarte });
 
     if (isBlockedcardId) {
       return res.status(401).json({
@@ -81,7 +77,7 @@ const authenticatePatient = async (req, res) => {
       if (!passwordMatch) {
         return res.status(400).json({ message: "Invalid credentials" });
       }
-      const tokenData = { patientId: fetchedPatient._id, cardId };
+      const tokenData = { patientId: fetchedPatient._id, idCarte };
       const token = await createToken(tokenData);
 
       return res.status(200).json({
@@ -110,7 +106,7 @@ const getProfile = async (req, res) => {
     return res
       .status(200)
       .json({
-        cardId: patient.cardId,
+        idCarte: patient.idCarte,
         firstName: patient.firstName,
         lastName: patient.lastName,
         birthdate: patient.birthdate,
