@@ -5,6 +5,7 @@ const {
   bloquecardId,
   NouveauMedecin,
   newMatricule,
+  BloquerPatient,
 } = require("./controller");
 
 //Ajouter une nouvelle carte de santé
@@ -13,8 +14,10 @@ router.post("/NewcardId", NewcardId);
 router.post("/bloquecardId", bloquecardId);
 
 //Ajouter un nouveau medecin dans le systeme
-// router.post("/new_doctor", NouveauMedecin);
+router.post("/new_doctor", NouveauMedecin);
 //Ajouter un nouveau matricule medecin
 router.post("/matricule", newMatricule);
+
+outer.post("/gestion_Patient", verifyToken, BloquerPatient);
 
 module.exports = router;
