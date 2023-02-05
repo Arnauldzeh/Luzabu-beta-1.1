@@ -81,104 +81,104 @@ const bloquecardId = async (req, res) => {
 
 //
 //Ajouter un médecin
-const NouveauMedecin = async (req, res) => {
-  try {
-    let {
-      matricule,
-      nom_Med,
-      prenom_med,
-      sexe_Med,
-      nationality_Med,
-      date_naissance_Med,
-      telephone_Med,
-      generaliste,
-      specialiste,
-      certificat_Etude,
-      autorisation_privee,
-      nom_hopital,
-    } = req.body;
+// const NouveauMedecin = async (req, res) => {
+//   try {
+//     let {
+//       matricule,
+//       nom_Med,
+//       prenom_med,
+//       sexe_Med,
+//       nationality_Med,
+//       date_naissance_Med,
+//       telephone_Med,
+//       generaliste,
+//       specialiste,
+//       certificat_Etude,
+//       autorisation_privee,
+//       nom_hopital,
+//     } = req.body;
 
-    matricule = matricule.trim();
-    nom_Med = nom_Med.trim();
-    prenom_med = prenom_med.trim();
-    sexe_Med = sexe_Med.trim();
-    nationality_Med = nationality_Med.trim();
-    date_naissance_Med = date_naissance_Med.trim();
-    telephone_Med = telephone_Med.trim();
-    generaliste = generaliste.trim();
-    specialiste = specialiste.trim();
-    certificat_Etude = certificat_Etude.trim();
-    autorisation_privee = autorisation_privee.trim();
-    nom_hopital = nom_hopital.trim();
+//     matricule = matricule.trim();
+//     nom_Med = nom_Med.trim();
+//     prenom_med = prenom_med.trim();
+//     sexe_Med = sexe_Med.trim();
+//     nationality_Med = nationality_Med.trim();
+//     date_naissance_Med = date_naissance_Med.trim();
+//     telephone_Med = telephone_Med.trim();
+//     generaliste = generaliste.trim();
+//     specialiste = specialiste.trim();
+//     certificat_Etude = certificat_Etude.trim();
+//     autorisation_privee = autorisation_privee.trim();
+//     nom_hopital = nom_hopital.trim();
 
-    if (
-      !(
-        matricule &&
-        nom_Med &&
-        prenom_med &&
-        sexe_Med &&
-        nationality_Med &&
-        date_naissance_Med &&
-        telephone_Med &&
-        (generaliste || specialiste) &&
-        certificat_Etude &&
-        autorisation_privee &&
-        nom_hopital
-      )
-    ) {
-      return res.status(401).send("Un ou plusieurs champs sont vides !");
-    } else {
-      //Vérifie si ce medecin existe déjà dans la base de donnée
-      const medecinexiste = await Medecin.findOne({
-        autorisation_privee: autorisation_privee,
-      });
-      // if(!medecinexiste){
-      //   throw Error("Ce matricule à déjà été enregistré")
-      // }
-      console.log(autorisation_privee);
-      if (medecinexiste) {
-        return res
-          .status(401)
-          .send("Un médecin avec cette autorisation à déjà été enregistré");
-      }
+//     if (
+//       !(
+//         matricule &&
+//         nom_Med &&
+//         prenom_med &&
+//         sexe_Med &&
+//         nationality_Med &&
+//         date_naissance_Med &&
+//         telephone_Med &&
+//         (generaliste || specialiste) &&
+//         certificat_Etude &&
+//         autorisation_privee &&
+//         nom_hopital
+//       )
+//     ) {
+//       return res.status(401).send("Un ou plusieurs champs sont vides !");
+//     } else {
+//       //Vérifie si ce medecin existe déjà dans la base de donnée
+//       const medecinexiste = await Medecin.findOne({
+//         autorisation_privee: autorisation_privee,
+//       });
+//       // if(!medecinexiste){
+//       //   throw Error("Ce matricule à déjà été enregistré")
+//       // }
+//       console.log(autorisation_privee);
+//       if (medecinexiste) {
+//         return res
+//           .status(401)
+//           .send("Un médecin avec cette autorisation à déjà été enregistré");
+//       }
 
-      //On hache le mot de passe
-      const hashedMatricule = await cryptage(matricule);
+//       //On hache le mot de passe
+//       const hashedMatricule = await cryptage(matricule);
 
-      const medecin = new Medecin({
-        matricule: hashedMatricule,
-        nom_Med,
-        prenom_med,
-        sexe_Med,
-        nationality_Med,
-        date_naissance_Med,
-        telephone_Med,
-        generaliste,
-        specialiste,
-        certificat_Etude,
-        autorisation_privee,
-        nom_hopital,
-      });
+//       const medecin = new Medecin({
+//         matricule: hashedMatricule,
+//         nom_Med,
+//         prenom_med,
+//         sexe_Med,
+//         nationality_Med,
+//         date_naissance_Med,
+//         telephone_Med,
+//         generaliste,
+//         specialiste,
+//         certificat_Etude,
+//         autorisation_privee,
+//         nom_hopital,
+//       });
 
-      medecin
-        .save()
-        .then(() => {
-          res.status(200).send("Médecin ajouté !");
-        })
-        .catch((error) => {
-          res
-            .status(401)
-            .send("Une érreur est survenus pendant l'ajout du médecin !");
-        });
-    }
-  } catch (error) {
-    throw error;
-  }
-};
+//       medecin
+//         .save()
+//         .then(() => {
+//           res.status(200).send("Médecin ajouté !");
+//         })
+//         .catch((error) => {
+//           res
+//             .status(401)
+//             .send("Une érreur est survenus pendant l'ajout du médecin !");
+//         });
+//     }
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 module.exports = {
   NewcardId,
   bloquecardId,
-  NouveauMedecin,
+  // NouveauMedecin,
   newMatricule,
 };
 

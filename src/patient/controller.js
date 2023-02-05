@@ -9,39 +9,6 @@ const {
   validateSignin,
 } = require("../middleware/dataValidation");
 
-//signin
-const authenticatePatient = async (req, res) => {
-  await validateSignin(req);
-  try {
-    const { cardId, password } = req.body;
-    const fetchedPatient = await Patient.findOne({ cardId });
-    const isBlockedcardId = await bloquer.findOne({ cardId });
-
-    if (isBlockedcardId) {
-      return res.status(401).json({
-        message: "Access denied due to some reasons!!",
-      });
-    } else if (!fetchedPatient) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    } else {
-      const hashedPassword = fetchedPatient.password;
-      const passwordMatch = await verifyHashedData(password, hashedPassword);
-      if (!passwordMatch) {
-        return res.status(400).json({ message: "Invalid credentials" });
-      }
-      const tokenData = { patientId: fetchedPatient._id, cardId };
-      const token = await createToken(tokenData);
-
-      return res.status(200).json({
-        token,
-        message: "User login successfully",
-      });
-    }
-  } catch (error) {
-    return res.status(500).json({ error });
-  }
-};
-
 //Create neww patient
 const createNewPatient = async (req, res, next) => {
   await validateSignup(req);
@@ -94,6 +61,39 @@ const createNewPatient = async (req, res, next) => {
   }
 };
 
+//signin
+const authenticatePatient = async (req, res) => {
+  await validateSignin(req);
+  try {
+    const { cardId, password } = req.body;
+    const fetchedPatient = await Patient.findOne({ cardId });
+    const isBlockedcardId = await bloquer.findOne({ cardId });
+
+    if (isBlockedcardId) {
+      return res.status(401).json({
+        message: "Access denied due to some reasons!!",
+      });
+    } else if (!fetchedPatient) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    } else {
+      const hashedPassword = fetchedPatient.password;
+      const passwordMatch = await verifyHashedData(password, hashedPassword);
+      if (!passwordMatch) {
+        return res.status(400).json({ message: "Invalid credentials" });
+      }
+      const tokenData = { patientId: fetchedPatient._id, cardId };
+      const token = await createToken(tokenData);
+
+      return res.status(200).json({
+        token,
+        message: "User login successfully",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+};
+
 //Afficher profile
 const getProfile = async (req, res) => {
   try {
@@ -107,7 +107,20 @@ const getProfile = async (req, res) => {
     if (!patient) {
       return res.status(404).send("No user found!!");
     }
-    return res.status(200).json(patient);
+    return res
+      .status(200)
+      .json({
+        cardId: patient.cardId,
+        firstName: patient.firstName,
+        lastName: patient.lastName,
+        birthdate: patient.birthdate,
+        sex: patient.sex,
+        profession: patient.profession,
+        nationality: patient.nationality,
+        address: patient.address,
+        phoneNumber: patient.phoneNumber,
+        profilePicture: patient.profilePicture,
+      });
   } catch (error) {
     return res.status(401).send("Invalid token provided");
   }
