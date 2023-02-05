@@ -1,4 +1,4 @@
-const { Identifiant, bloquer, Matricule } = require("./models");
+const { Carte, Bloquer, Matricule } = require("./models");
 const {
   validatecardId,
   validateMatricule,
@@ -10,17 +10,17 @@ const { Medecin } = require("../medecin/model");
 const NewcardId = async (req, res) => {
   await validatecardId(req);
   try {
-    const { cardId } = req.body;
+    const { idCarte } = req.body;
 
     //checking if CardId belongs to the system
     //checking if patient already exists
-    const existingcardId = await Identifiant.findOne({ cardId });
+    const existingcardId = await Carte.findOne({ idCarte });
 
     if (existingcardId) {
       return res.status(404).json({ error: "cardId already exist" });
     }
-    const newcardId = new Identifiant({
-      cardId,
+    const newcardId = new Carte({
+      idCarte,
     });
     const createdcardId = await newcardId.save();
     return res.status(200).json({ message: "cardId added successfully" });
@@ -56,20 +56,20 @@ const newMatricule = async (req, res) => {
 const bloquecardId = async (req, res) => {
   await validatebloquecardId(req);
   try {
-    const { cardId } = req.body;
+    const { idCarte } = req.body;
 
-    const existingcardId = await Identifiant.findOne({ cardId });
+    const existingcardId = await Carte.findOne({ idCarte });
 
     //checking if CardId belongs to the blocked collection
     //checking if patient is already blocked
-    const isBlockedcardId = await bloquer.findOne({ cardId });
+    const isBlockedcardId = await bloquer.findOne({ idCarte });
     if (!existingcardId) {
       return res.status(404).json({ error: "Id not found" });
     } else if (isBlockedcardId) {
       return res.status(200).json({ message: "Id already blocked" });
     } else {
-      const newcardId = new bloquer({
-        cardId,
+      const newcardId = new Bloquer({
+        idCarte,
       });
       const blockedcardId = await newcardId.save();
       return res.status(200).json({ message: "User blocked successfully" });
@@ -79,108 +79,155 @@ const bloquecardId = async (req, res) => {
   }
 };
 
-//
+
 //Ajouter un médecin
-// const NouveauMedecin = async (req, res) => {
-//   try {
-//     let {
-//       matricule,
-//       nom_Med,
-//       prenom_med,
-//       sexe_Med,
-//       nationality_Med,
-//       date_naissance_Med,
-//       telephone_Med,
-//       generaliste,
-//       specialiste,
-//       certificat_Etude,
-//       autorisation_privee,
-//       nom_hopital,
-//     } = req.body;
+const NouveauMedecin = async (req, res) => {
+  try {
+    let {
+      matricule,
+      nom_Med,
+      prenom_med,
+      sexe_Med,
+      nationality_Med,
+      date_naissance_Med,
+      telephone_Med,
+      generaliste,
+      specialiste,
+      certificat_Etude,
+      autorisation_privee,
+      nom_hopital,
+    } = req.body;
 
-//     matricule = matricule.trim();
-//     nom_Med = nom_Med.trim();
-//     prenom_med = prenom_med.trim();
-//     sexe_Med = sexe_Med.trim();
-//     nationality_Med = nationality_Med.trim();
-//     date_naissance_Med = date_naissance_Med.trim();
-//     telephone_Med = telephone_Med.trim();
-//     generaliste = generaliste.trim();
-//     specialiste = specialiste.trim();
-//     certificat_Etude = certificat_Etude.trim();
-//     autorisation_privee = autorisation_privee.trim();
-//     nom_hopital = nom_hopital.trim();
+    matricule = matricule.trim();
+    nom_Med = nom_Med.trim();
+    prenom_med = prenom_med.trim();
+    sexe_Med = sexe_Med.trim();
+    nationality_Med = nationality_Med.trim();
+    date_naissance_Med = date_naissance_Med.trim();
+    telephone_Med = telephone_Med.trim();
+    generaliste = generaliste.trim();
+    specialiste = specialiste.trim();
+    certificat_Etude = certificat_Etude.trim();
+    autorisation_privee = autorisation_privee.trim();
+    nom_hopital = nom_hopital.trim();
 
-//     if (
-//       !(
-//         matricule &&
-//         nom_Med &&
-//         prenom_med &&
-//         sexe_Med &&
-//         nationality_Med &&
-//         date_naissance_Med &&
-//         telephone_Med &&
-//         (generaliste || specialiste) &&
-//         certificat_Etude &&
-//         autorisation_privee &&
-//         nom_hopital
-//       )
-//     ) {
-//       return res.status(401).send("Un ou plusieurs champs sont vides !");
-//     } else {
-//       //Vérifie si ce medecin existe déjà dans la base de donnée
-//       const medecinexiste = await Medecin.findOne({
-//         autorisation_privee: autorisation_privee,
-//       });
-//       // if(!medecinexiste){
-//       //   throw Error("Ce matricule à déjà été enregistré")
-//       // }
-//       console.log(autorisation_privee);
-//       if (medecinexiste) {
-//         return res
-//           .status(401)
-//           .send("Un médecin avec cette autorisation à déjà été enregistré");
-//       }
+    if (
+      !(
+        matricule &&
+        nom_Med &&
+        prenom_med &&
+        sexe_Med &&
+        nationality_Med &&
+        date_naissance_Med &&
+        telephone_Med &&
+        (generaliste || specialiste) &&
+        certificat_Etude &&
+        autorisation_privee &&
+        nom_hopital
+      )
+    ) {
+      return res.status(401).send("Un ou plusieurs champs sont vides !");
+    } else {
+      //Vérifie si ce medecin existe déjà dans la base de donnée
+      const medecinexiste = await Medecin.findOne({
+        autorisation_privee: autorisation_privee,
+      });
+      // if(!medecinexiste){
+      //   throw Error("Ce matricule à déjà été enregistré")
+      // }
+      console.log(autorisation_privee);
+      if (medecinexiste) {
+        return res
+          .status(401)
+          .send("Un médecin avec cette autorisation à déjà été enregistré");
+      }
 
-//       //On hache le mot de passe
-//       const hashedMatricule = await cryptage(matricule);
+      //On hache le mot de passe
+      const hashedMatricule = await cryptage(matricule);
 
-//       const medecin = new Medecin({
-//         matricule: hashedMatricule,
-//         nom_Med,
-//         prenom_med,
-//         sexe_Med,
-//         nationality_Med,
-//         date_naissance_Med,
-//         telephone_Med,
-//         generaliste,
-//         specialiste,
-//         certificat_Etude,
-//         autorisation_privee,
-//         nom_hopital,
-//       });
+      const medecin = new Medecin({
+        matricule: hashedMatricule,
+        nom_Med,
+        prenom_med,
+        sexe_Med,
+        nationality_Med,
+        date_naissance_Med,
+        telephone_Med,
+        generaliste,
+        specialiste,
+        certificat_Etude,
+        autorisation_privee,
+        nom_hopital,
+      });
 
-//       medecin
-//         .save()
-//         .then(() => {
-//           res.status(200).send("Médecin ajouté !");
-//         })
-//         .catch((error) => {
-//           res
-//             .status(401)
-//             .send("Une érreur est survenus pendant l'ajout du médecin !");
-//         });
-//     }
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+      medecin
+        .save()
+        .then(() => {
+          res.status(200).send("Médecin ajouté !");
+        })
+        .catch((error) => {
+          res
+            .status(401)
+            .send("Une érreur est survenus pendant l'ajout du médecin !");
+        });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+//Bloquer un patient
+const BloquerPatient = async (req, res) => {
+  try {
+    const verifietoken = 1 /*verifieToken(req,res)*/;
+    if (!verifietoken) {
+      return res.status(404).send("Patient non trouvé");
+    }else{
+      //Recupère les données de carte sur le body
+      let { idCarte, choix } = req.body;
+
+      //Vérifie si la carte existe
+      const existingNewId = await Carte.findOne({ idCarte: idCarte });
+      if(!existingNewId){
+        throw Error("Identifiant incorrect !");
+      }else{
+        //Vérifie si la carte est en service
+        if(existingNewId.statutCarte == "Pas en service"){
+          throw Error("Cette carte n'est pas encore en service donc ne peut être bloquer");
+        }else{
+          //Vérife si la carte a déjà été bloquer
+          const existingInBloquer = await Bloquer.findOne({cardId: cardId});
+
+          if(!existingInBloquer){
+            //Crée cette carte dans la collection bloquer
+            const cartebloquer = new Bloquer({
+              idCarte,
+            });
+
+            //Sauvegarder le carte bloquer dans la BD
+            const carteBloquer = await cartebloquer.save();
+            res.status(200).json(carteBloquer);
+          }else{
+            if(choix.toString() == "1"){
+              Bloquer.deleteOne({idCarte: idCarte})
+                  .then( () => {res.status(200).send("Carte débloquer !")})
+                  .catch(error => res.status(401).send("Carte toujours bloquée !"));
+            }
+            throw Error("Cette carte est actuellement bloquée");
+          }
+        }
+      }
+    }
+  }
+  catch (error){error}
+}
+
 module.exports = {
   NewcardId,
   bloquecardId,
-  // NouveauMedecin,
+  NouveauMedecin,
   newMatricule,
+  BloquerPatient
 };
-
 //TO DO
 //get any id and block the corresponding account
