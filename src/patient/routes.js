@@ -1,11 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {
-  createNewPatient,
-  authenticatePatient,
-  getProfile,
-  editProfile,
-} = require("./controller");
+const { createNewPatient, authenticatePatient, getProfile, editProfile } = require("./controller");
 // const { validateProfile } = require("../middleware/dataValidation");
 
 const { verifyToken } = require("../middleware/auth");
