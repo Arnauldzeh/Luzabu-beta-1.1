@@ -14,14 +14,18 @@ const IdSchema = new Schema({
 //Identifiants bloqué
 idCarte bloquerSchema = new Schema({
   idCarte: String,
-  matricule: String,
+});
+
+//Identifiant medeicn
+const matriculeSchema = new Schema({
+     matricule: String,
 });
 
 
 
 
 const Carte = mongoose.model("Cartes", IdSchema);
-const bloquer = mongoose.model("Bloquer", bloquerSchema);
+const Bloquer = mongoose.model("Bloquer", bloquerSchema);
 const Matricule = mongoose.model("Matricules", matriculeSchema);
 
-module.exports = { Identifiant, bloquer, Matricule };
+module.exports = { Carte, Bloquer, Matricule };
