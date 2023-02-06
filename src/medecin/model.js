@@ -1,66 +1,69 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-//Identifiant Médecin
-const IdSchema = new Schema({
+//Informations Médecin
+const medecinSchema = new Schema({
   matricule: {
     type: String,
     required: true,
+    unique: true,
   },
-  motdepasse: {
-    type: String,
-  },
-  nom_Med: {
-    type: String,
-    required: true,
-    minlength: 3,
-  },
-  prenom_med: {
+  firstName: {
     type: String,
     required: true,
   },
-  date_naissance_Med: {
+  lastName: {
     type: String,
     required: true,
   },
-  sexe_Med: {
+  email: {
     type: String,
     required: true,
   },
-  nationality_Med: {
+  birthdate: {
     type: String,
     required: true,
   },
-  password_Med: {
+  sex: {
     type: String,
     required: true,
   },
-  telephone_Med: {
-    type: String,
-    required: true,
-  },
-  generaliste: {
-    type: String,
-    required: true,
-  },
-  specialiste: {
+  nationality: {
     type: String,
     required: true,
   },
 
-  certificat_Etude: {
+  phoneNumber: {
     type: String,
     required: true,
   },
-  autorisation_privee: {
+  generalist: {
     type: String,
     required: true,
   },
-  nom_hopital: {
+  specialist: {
     type: String,
+    required: true,
+  },
+
+  schoolCertificate: {
+    type: String,
+    required: true,
+  },
+  privateAutorisation: {
+    type: String,
+    required: true,
+  },
+  hopitalName: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
   },
 });
 
-const Medecin = mongoose.model("Medecins", IdSchema);
+const Medecin = mongoose.model("Medecins", medecinSchema);
 
 module.exports = { Medecin };

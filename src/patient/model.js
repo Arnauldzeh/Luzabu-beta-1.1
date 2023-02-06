@@ -15,6 +15,12 @@ const PatientSchema = new Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    // match:r,
+  },
   birthdate: {
     type: Date,
     required: true,

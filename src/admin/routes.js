@@ -5,19 +5,25 @@ const {
   bloquecardId,
   NouveauMedecin,
   newMatricule,
-  BloquerPatient,
+  bloqueMatricule,
+  unblockMatricule,
+  unblockcardId,
 } = require("./controller");
 
 //Ajouter une nouvelle carte de santé
 router.post("/NewcardId", NewcardId);
-//bloquer un utilisateur(patient/medecin) par l'Id de la carte de santé
-router.post("/bloquecardId", bloquecardId);
+//bloquer un patient par l'Id de la carte de santé
+router.post("/blockcardId", bloquecardId);
+//débloquer un medecin par l'Id de la carte de santé
+router.post("/unblockcardId", unblockcardId);
 
 //Ajouter un nouveau medecin dans le systeme
-router.post("/new_doctor", NouveauMedecin);
+router.post("/newDoctor", NouveauMedecin);
 //Ajouter un nouveau matricule medecin
 router.post("/matricule", newMatricule);
-
-outer.post("/gestion_Patient", verifyToken, BloquerPatient);
-
+//
+//bloquer un medecin par l'Id de la carte de santé
+router.post("/blockMatricule", bloqueMatricule);
+//débloquer un medecin par l'Id de la carte de santé
+router.post("/unblockMatricule", unblockMatricule);
 module.exports = router;

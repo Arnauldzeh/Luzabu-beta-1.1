@@ -3,29 +3,34 @@ const Schema = mongoose.Schema;
 
 //Identifiant Patients
 const IdSchema = new Schema({
-  idCarte: {
+  cardId: {
     type: String,
-    required: true,
   },
-  patientId: String,
-  statutCarte: Boolean,
 });
 
 //Identifiants bloqué
-idCarte bloquerSchema = new Schema({
-  idCarte: String,
+const bloquerSchema = new Schema({
+  cardId: {
+    type: String,
+  },
 });
 
-//Identifiant medeicn
+//matricule medecin
 const matriculeSchema = new Schema({
-     matricule: String,
+  matricule: {
+    type: String,
+  },
+});
+//matricule bloqué
+const bloquermatSchema = new Schema({
+  matricule: {
+    type: String,
+  },
 });
 
-
-
-
-const Carte = mongoose.model("Cartes", IdSchema);
-const Bloquer = mongoose.model("Bloquer", bloquerSchema);
+const Identifiant = mongoose.model("Identifiants", IdSchema);
+const bloquer = mongoose.model("patientBloqués", bloquerSchema);
+const bloquerMedecin = mongoose.model("medecinBloqués", bloquermatSchema);
 const Matricule = mongoose.model("Matricules", matriculeSchema);
 
-module.exports = { Carte, Bloquer, Matricule };
+module.exports = { Identifiant, bloquer, Matricule, bloquerMedecin };
