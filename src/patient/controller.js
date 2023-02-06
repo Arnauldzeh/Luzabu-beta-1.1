@@ -11,12 +11,12 @@ const {
 
 //Create neww patient
 const createNewPatient = async (req, res, next) => {
-  await validateSignup(req);
   try {
-    const {
+    let {
       cardId,
       firstName,
       lastName,
+      email,
       birthdate,
       sex,
       profession,
@@ -26,44 +26,88 @@ const createNewPatient = async (req, res, next) => {
       profilePicture,
       password,
     } = req.body;
+    //removing blank spaces
+    cardId = cardId.trim();
+    firstName = firstName.trim();
+    lastName = lastName.trim();
+    email = email.trim();
+    birthdate = birthdate.trim();
+    sex = sex.trim();
+    profession = profession.trim();
+    nationality = nationality.trim();
+    address = address.trim();
+    phoneNumber = phoneNumber.trim();
+    profilePicture = profilePicture.trim();
+    password = password;
 
-    //checking if CardId belongs to the system
-    //checking if patient already exists
-    //checking if CardId is already used
-    const existingNewId = await Identifiant.findOne({ cardId });
-    const existingPatient = await Patient.findOne({ cardId });
+    //empty fields
+    if (
+      !(
+        cardId &&
+        firstName &&
+        lastName &&
+        email &&
+        birthdate &&
+        sex &&
+        profession &&
+        nationality &&
+        address &&
+        phoneNumber &&
+        profilePicture &&
+        password
+      )
+    ) {
+      return res.status(400).json({ error: "Empty input fields!!!" });
+    } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
+      return res.status(400).json({ error: "Invalid name!!!" });
+    } else if (
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+    ) {
+      return res.status(400).json({ error: "Invalid email!!!" });
+    } else if (password.length < 8) {
+      return res.status(400).json({ error: "Invalid password!!!" });
+    } else {
+      //checking if CardId belongs to the system
+      //checking if patient already exists
+      //checking if CardId is already used
+      const existingNewId = await Identifiant.findOne({ cardId });
+      const existingPatient = await Patient.findOne({ cardId });
+      const existingEmail = await Patient.findOne({ email });
 
-    if (!existingNewId) {
-      return res.status(400).json({ error: "Id card does'nt exist" });
-    } else if (existingPatient) {
-      return res.status(400).json({ error: "Id card already used" });
+      if (!existingNewId) {
+        return res.status(400).json({ error: "Id card does'nt exist" });
+      } else if (existingPatient) {
+        return res.status(400).json({ error: "Id card already used" });
+      } else if (existingEmail) {
+        return res.status(400).json({ error: "email already used" });
+      }
+
+      //hash password with the cryptage function in the services folder
+      const hashedPassword = await cryptage(password);
+      const newPatient = new Patient({
+        cardId,
+        firstName,
+        lastName,
+        email,
+        birthdate,
+        sex,
+        profession,
+        nationality,
+        address,
+        phoneNumber,
+        profilePicture,
+        password: hashedPassword,
+      });
+      await newPatient.save();
+      res.status(201).json({ message: "User registered successfully!!" });
     }
-
-    //hash password with the cryptage function in the services folder
-    const hashedPassword = await cryptage(password);
-    const newPatient = new Patient({
-      cardId,
-      firstName,
-      lastName,
-      birthdate,
-      sex,
-      profession,
-      nationality,
-      address,
-      phoneNumber,
-      profilePicture,
-      password: hashedPassword,
-    });
-    await newPatient.save();
-    res.status(201).json({ message: "User registered successfully!!" });
   } catch (error) {
-    return res.status(500).json({ error });
+    return res.status(500).json({ error: "The server crashed" });
   }
 };
 
 //signin
 const authenticatePatient = async (req, res) => {
-  await validateSignin(req);
   try {
     const { cardId, password } = req.body;
     const fetchedPatient = await Patient.findOne({ cardId });
@@ -79,7 +123,7 @@ const authenticatePatient = async (req, res) => {
       const hashedPassword = fetchedPatient.password;
       const passwordMatch = await verifyHashedData(password, hashedPassword);
       if (!passwordMatch) {
-        return res.status(400).json({ message: "Invalid credentials" });
+        return res.status(400).json({ message: "Invalid password" });
       }
       const tokenData = { patientId: fetchedPatient._id, cardId };
       const token = await createToken(tokenData);
@@ -107,20 +151,18 @@ const getProfile = async (req, res) => {
     if (!patient) {
       return res.status(404).send("No user found!!");
     }
-    return res
-      .status(200)
-      .json({
-        cardId: patient.cardId,
-        firstName: patient.firstName,
-        lastName: patient.lastName,
-        birthdate: patient.birthdate,
-        sex: patient.sex,
-        profession: patient.profession,
-        nationality: patient.nationality,
-        address: patient.address,
-        phoneNumber: patient.phoneNumber,
-        profilePicture: patient.profilePicture,
-      });
+    return res.status(200).json({
+      cardId: patient.cardId,
+      firstName: patient.firstName,
+      lastName: patient.lastName,
+      birthdate: patient.birthdate,
+      sex: patient.sex,
+      profession: patient.profession,
+      nationality: patient.nationality,
+      address: patient.address,
+      phoneNumber: patient.phoneNumber,
+      profilePicture: patient.profilePicture,
+    });
   } catch (error) {
     return res.status(401).send("Invalid token provided");
   }

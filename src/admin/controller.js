@@ -1,10 +1,15 @@
-const { Identifiant, bloquer, Matricule } = require("./models");
+const { Identifiant, bloquer, Matricule, bloquerMedecin } = require("./models");
 const {
   validatecardId,
   validateMatricule,
   validatebloquecardId,
+  validatebloquematricule,
+  validateMedecin,
 } = require("../middleware/dataValidation");
 const { Medecin } = require("../medecin/model");
+const { cryptage, verifyHashedData } = require("../services/cryptage");
+const { createToken } = require("../services/creerToken");
+const jwt = require("jsonwebtoken");
 
 //Create neww patient
 const NewcardId = async (req, res) => {
@@ -52,7 +57,7 @@ const newMatricule = async (req, res) => {
   }
 };
 
-//block a user
+//block a patient
 const bloquecardId = async (req, res) => {
   await validatebloquecardId(req);
   try {
@@ -78,108 +83,192 @@ const bloquecardId = async (req, res) => {
     throw error;
   }
 };
+//block a patient
+const bloqueMatricule = async (req, res) => {
+  await validatebloquematricule(req);
+  try {
+    const { matricule } = req.body;
+
+    const existingmatricule = await Matricule.findOne({ matricule });
+
+    //checking if CardId belongs to the blocked collection
+    //checking if patient is already blocked
+    const blockedMatricule = await bloquerMedecin.findOne({ matricule });
+    if (!existingmatricule) {
+      return res.status(404).json({ error: "Matricule not found" });
+    } else if (blockedMatricule) {
+      return res.status(401).json({ message: "Matricule already blocked" });
+    } else {
+      const newMatricule = new bloquerMedecin({
+        matricule,
+      });
+      const blockedmatricule = await newMatricule.save();
+      return res
+        .status(200)
+        .json({ message: "Matricule blocked successfully" });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+const unblockMatricule = async (req, res) => {
+  try {
+    let { matricule } = req.body;
+    matricule = matricule.trim();
+
+    const blockedMat = await bloquerMedecin.findOne({ matricule });
+
+    if (!blockedMat) {
+      return res.status(404).json({ error: "Matricule not found" });
+    } else {
+      await bloquerMedecin.deleteOne({ matricule });
+      return res
+        .status(200)
+        .json({ message: "Matricule unblocked successfully" });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+const unblockcardId = async (req, res) => {
+  try {
+    let { cardId } = req.body;
+    cardId = cardId.trim();
+
+    const blockedCardId = await bloquer.findOne({ cardId });
+
+    if (!blockedCardId) {
+      return res.status(404).json({ error: "cardId not found" });
+    } else {
+      await bloquer.deleteOne({ cardId });
+      return res.status(200).json({ message: "cardId unblocked successfully" });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
 
 //
-//Ajouter un médecin
-// const NouveauMedecin = async (req, res) => {
-//   try {
-//     let {
-//       matricule,
-//       nom_Med,
-//       prenom_med,
-//       sexe_Med,
-//       nationality_Med,
-//       date_naissance_Med,
-//       telephone_Med,
-//       generaliste,
-//       specialiste,
-//       certificat_Etude,
-//       autorisation_privee,
-//       nom_hopital,
-//     } = req.body;
+//Create neww patient
+const NouveauMedecin = async (req, res, next) => {
+  try {
+    let {
+      matricule,
+      firstName,
+      lastName,
+      email,
+      birthdate,
+      sex,
+      nationality,
+      phoneNumber,
+      generalist,
+      specialist,
+      schoolCertificate,
+      privateAutorisation,
+      hopitalName,
+      password,
+    } = req.body;
 
-//     matricule = matricule.trim();
-//     nom_Med = nom_Med.trim();
-//     prenom_med = prenom_med.trim();
-//     sexe_Med = sexe_Med.trim();
-//     nationality_Med = nationality_Med.trim();
-//     date_naissance_Med = date_naissance_Med.trim();
-//     telephone_Med = telephone_Med.trim();
-//     generaliste = generaliste.trim();
-//     specialiste = specialiste.trim();
-//     certificat_Etude = certificat_Etude.trim();
-//     autorisation_privee = autorisation_privee.trim();
-//     nom_hopital = nom_hopital.trim();
+    //removing blank spaces
+    matricule = matricule.trim();
+    firstName = firstName.trim();
+    lastName = lastName.trim();
+    email = email.trim();
+    birthdate = birthdate.trim();
+    sex = sex.trim();
+    nationality = nationality.trim();
+    phoneNumber = phoneNumber.trim();
+    generalist = generalist.trim();
+    specialist = specialist.trim();
+    schoolCertificate = schoolCertificate.trim();
+    privateAutorisation = privateAutorisation.trim();
+    hopitalName = hopitalName.trim();
+    password = password;
 
-//     if (
-//       !(
-//         matricule &&
-//         nom_Med &&
-//         prenom_med &&
-//         sexe_Med &&
-//         nationality_Med &&
-//         date_naissance_Med &&
-//         telephone_Med &&
-//         (generaliste || specialiste) &&
-//         certificat_Etude &&
-//         autorisation_privee &&
-//         nom_hopital
-//       )
-//     ) {
-//       return res.status(401).send("Un ou plusieurs champs sont vides !");
-//     } else {
-//       //Vérifie si ce medecin existe déjà dans la base de donnée
-//       const medecinexiste = await Medecin.findOne({
-//         autorisation_privee: autorisation_privee,
-//       });
-//       // if(!medecinexiste){
-//       //   throw Error("Ce matricule à déjà été enregistré")
-//       // }
-//       console.log(autorisation_privee);
-//       if (medecinexiste) {
-//         return res
-//           .status(401)
-//           .send("Un médecin avec cette autorisation à déjà été enregistré");
-//       }
+    //testing empty fields
+    if (
+      !(
+        matricule &&
+        firstName &&
+        lastName &&
+        email &&
+        birthdate &&
+        sex &&
+        nationality &&
+        phoneNumber &&
+        generalist &&
+        specialist &&
+        schoolCertificate &&
+        privateAutorisation &&
+        hopitalName &&
+        password
+      )
+    ) {
+      return res.status(400).json({ error: "Empty input fields!!!" });
+    } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
+      return res.status(400).json({ error: "Invalid name!!!" });
+    } else if (
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+    ) {
+      return res.status(400).json({ error: "Invalid email!!!" });
+    } else if (password.length < 8) {
+      return res
+        .status(400)
+        .json({ error: "Password must contain atleast 8 caracters!!!" });
+    } else {
+      //checking if CardId belongs to the system
+      //checking if patient already exists
+      //checking if CardId is already used
+      const existingMatricule = await Matricule.findOne({ matricule });
+      const existingMedecin = await Medecin.findOne({ matricule });
+      const existingEmail = await Medecin.findOne({ email });
 
-//       //On hache le mot de passe
-//       const hashedMatricule = await cryptage(matricule);
+      if (!existingMatricule) {
+        return res.status(400).json({ error: "Matricule does'nt exist" });
+      } else if (existingMedecin) {
+        return res
+          .status(400)
+          .json({ error: "A doctor already used this data" });
+      } else if (existingEmail) {
+        return res.status(400).json({ error: "email already used" });
+      }
 
-//       const medecin = new Medecin({
-//         matricule: hashedMatricule,
-//         nom_Med,
-//         prenom_med,
-//         sexe_Med,
-//         nationality_Med,
-//         date_naissance_Med,
-//         telephone_Med,
-//         generaliste,
-//         specialiste,
-//         certificat_Etude,
-//         autorisation_privee,
-//         nom_hopital,
-//       });
+      //hash password with the cryptage function in the services folder
+      const hashedPassword = await cryptage(password);
+      const newMedecin = new Medecin({
+        matricule,
+        firstName,
+        lastName,
+        email,
+        birthdate,
+        sex,
+        nationality,
+        phoneNumber,
+        generalist,
+        specialist,
+        schoolCertificate,
+        privateAutorisation,
+        hopitalName,
+        password: hashedPassword,
+      });
+      const addedDoctor = await newMedecin.save();
+      return res.status(200).json({ message: "User registered successfully" });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: "The server has crashed" });
+  }
+};
 
-//       medecin
-//         .save()
-//         .then(() => {
-//           res.status(200).send("Médecin ajouté !");
-//         })
-//         .catch((error) => {
-//           res
-//             .status(401)
-//             .send("Une érreur est survenus pendant l'ajout du médecin !");
-//         });
-//     }
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+//
 module.exports = {
   NewcardId,
   bloquecardId,
-  // NouveauMedecin,
+  unblockcardId,
+  NouveauMedecin,
   newMatricule,
+  bloqueMatricule,
+  unblockMatricule,
 };
 
 //TO DO
