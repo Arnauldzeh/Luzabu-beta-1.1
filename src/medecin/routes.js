@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { authenticateMedecin } = require("./controller");
+const { authenticateMedecin,Sms, AccesCarnet } = require("./controller");
 
 const { verifyToken } = require("../middleware/auth");
 
