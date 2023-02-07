@@ -58,21 +58,21 @@ const createNewPatient = async (req, res, next) => {
       )
     ) {
       console.log("Returning error: Empty input fields!!!");
-      return res.status(400).json({ error: "Empty input fields!!!" });
+      return res.status(200).json({ error: "Empty input fields!!!" });
     } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
       console.log("Returning error: Invalid name!!!");
-      return res.status(400).json({ error: "Invalid name!!!" });
+      return res.status(200).json({ error: "Invalid name!!!" });
     } else if (
       !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
     ) {
       console.log("Returning error: Invalid email!!!");
-      return res.status(400).json({ error: "Invalid email!!!" });
+      return res.status(200).json({ error: "Invalid email!!!" });
     } else if (password.length < 8) {
       console.log(
         "Returning error: Password must contain atleast 8 caracters!!!"
       );
       return res
-        .status(400)
+        .status(200)
         .json({ error: "Password must contain atleast 8 caracters!!!" });
     } else {
       //checking if CardId belongs to the system
@@ -83,11 +83,11 @@ const createNewPatient = async (req, res, next) => {
       const existingEmail = await Patient.findOne({ email });
 
       if (!existingNewId) {
-        return res.status(400).json({ error: "this card does'nt exist" });
+        return res.status(200).json({ error: "this card does'nt exist" });
       } else if (existingPatient) {
-        return res.status(400).json({ error: "Card already used" });
+        return res.status(200).json({ error: "Card already used" });
       } else if (existingEmail) {
-        return res.status(400).json({ error: "email already used" });
+        return res.status(200).json({ error: "email already used" });
       }
 
       //hash password with the cryptage function in the services folder
