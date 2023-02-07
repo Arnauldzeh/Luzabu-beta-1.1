@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const PatientSchema = new Schema({
-  idCarte: {
+  cardId: {
     type: String,
     required: true,
     unique: true,

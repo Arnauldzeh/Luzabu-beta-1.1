@@ -57,15 +57,23 @@ const createNewPatient = async (req, res, next) => {
         password
       )
     ) {
+      console.log("Returning error: Empty input fields!!!");
       return res.status(400).json({ error: "Empty input fields!!!" });
     } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
+      console.log("Returning error: Invalid name!!!");
       return res.status(400).json({ error: "Invalid name!!!" });
     } else if (
       !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
     ) {
+      console.log("Returning error: Invalid email!!!");
       return res.status(400).json({ error: "Invalid email!!!" });
     } else if (password.length < 8) {
-      return res.status(400).json({ error: "Invalid password!!!" });
+      console.log(
+        "Returning error: Password must contain atleast 8 caracters!!!"
+      );
+      return res
+        .status(400)
+        .json({ error: "Password must contain atleast 8 caracters!!!" });
     } else {
       //checking if CardId belongs to the system
       //checking if patient already exists
@@ -75,9 +83,9 @@ const createNewPatient = async (req, res, next) => {
       const existingEmail = await Patient.findOne({ email });
 
       if (!existingNewId) {
-        return res.status(400).json({ error: "Id card does'nt exist" });
+        return res.status(400).json({ error: "this card does'nt exist" });
       } else if (existingPatient) {
-        return res.status(400).json({ error: "Id card already used" });
+        return res.status(400).json({ error: "Card already used" });
       } else if (existingEmail) {
         return res.status(400).json({ error: "email already used" });
       }
@@ -99,10 +107,13 @@ const createNewPatient = async (req, res, next) => {
         password: hashedPassword,
       });
       await newPatient.save();
-      res.status(201).json({ message: "User registered successfully!!" });
+      return res
+        .status(201)
+        .json({ message: "User registered successfully!!" });
     }
   } catch (error) {
-    return res.status(500).json({ error: "The server crashed" });
+    console.error("Caught error:", error);
+    return res.status(500).json({ error: "The server has crashed" });
   }
 };
 
