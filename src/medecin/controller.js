@@ -61,7 +61,7 @@ const Sms = (req, res) => {
     };
 
     OrangeSms(options).then( () =>{
-        console.log(responseOrangeSms);
+        console.log(options);
         /* Devrait sortir un objet comme {message:sms sent},{message:401} (401 est un exemple de status code d'erreur
            {message:You have to provide all the keys of the object},{message:the object key must not have a value like null or undefined}
            {message:One or more object keys are incorrectly written}, {message: The parameter must be an object}
