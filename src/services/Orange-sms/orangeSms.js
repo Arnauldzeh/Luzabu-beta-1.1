@@ -1,4 +1,4 @@
-module.exports = (dataObject)=>{
+const OrangeSms = (dataObject)=>{
  return new Promise((resolve)=>{
    // ici on fait quelques vérifications sur la structure de données passée en paramètre
    // First we check if dataObject is an object
@@ -39,3 +39,5 @@ module.exports = (dataObject)=>{
    }
  });
 };
+
+module.exports = { OrangeSms }
