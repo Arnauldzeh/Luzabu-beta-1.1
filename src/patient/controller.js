@@ -119,23 +119,13 @@ const createNewPatient = async (req, res, next) => {
         profilePicture,
         password: hashedPassword,
       });
-      await newPatient.save();
-
       // create new profile medical
       const newProfilMedical = new ProfilMedical({
-        firstName,
-        lastName,
-        email,
-        birthdate,
-        sex,
-        profession,
-        nationality,
-        address,
-        phoneNumber,
-        profilePicture,
         patient: newPatient._id,
       });
+      await newPatient.save();
       await newProfilMedical.save();
+
       return res.status(201).json({
         message: "User registered and Medical Profile created successfully!! ",
       });
