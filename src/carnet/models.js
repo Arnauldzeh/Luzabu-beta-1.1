@@ -28,7 +28,16 @@ const ProfilMedicalSchema = new Schema({
   allergies: [String],
   maladieChronique: [String],
   antecedentFamilliaux: [String],
-  contactUrgent: [String],
+  contactUrgent: [
+    {
+      nom: { type: String },
+      telephone: { type: String },
+      profession: { type: String },
+      sex: { type: String },
+      adresse: { type: String },
+      lien: { type: String },
+    },
+  ],
 });
 
 //Consultations
