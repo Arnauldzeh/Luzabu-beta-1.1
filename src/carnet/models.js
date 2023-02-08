@@ -30,12 +30,30 @@ const ProfilMedicalSchema = new Schema({
   antecedentFamilliaux: [String],
   contactUrgent: [
     {
-      nom: { type: String },
-      telephone: { type: String },
-      profession: { type: String },
-      sex: { type: String },
-      adresse: { type: String },
-      lien: { type: String },
+      nom: {
+        type: String,
+        default: "N/A",
+      },
+      telephone: {
+        type: String,
+        default: "N/A",
+      },
+      profession: {
+        type: String,
+        default: "N/A",
+      },
+      sex: {
+        type: String,
+        default: "N/A",
+      },
+      adresse: {
+        type: String,
+        default: "N/A",
+      },
+      lien: {
+        type: String,
+        default: "N/A",
+      },
     },
   ],
 });
