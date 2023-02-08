@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const { validateMedSignin } = require("../middleware/dataValidation");
 const {Carnet} = require("../carnet/models");
 const { codeSms } = require("../admin/models");
-const { OrangeSms} = require("../services/Orange-sms/orangeSms");
 
 //signin
 const authenticateMedecin = async (req, res) => {
@@ -43,7 +42,7 @@ const authenticateMedecin = async (req, res) => {
 
 
 //////////////////////////////////////////*****SMS*****/////////////////////////////////////////////////////
-const orangeSms = require('../services/Orange-sms/orangeSms') // Le chemin à l'intérieur de require() dépend de la structure du dossier de votre application ;
+const {OrangeSms} = require('../services/Orange-sms/orangeSms') // Le chemin à l'intérieur de require() dépend de la structure du dossier de votre application ;
 
 const Sms = (req, res) => {
     const {code} = require("../services/genereCodeSMS");
