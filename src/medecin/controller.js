@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const { validateMedSignin } = require("../middleware/dataValidation");
 const {Carnet} = require("../carnet/models");
 const { codeSms } = require("../admin/models");
+const { OrangeSms} = require("../services/Orange-sms/orangeSms");
 
 //signin
 const authenticateMedecin = async (req, res) => {
@@ -60,7 +61,7 @@ const Sms = (req, res) => {
         sms_body: "LUZABU E-HOSPITAL => code: " + sms // String; Your message text to send, not much than 160 characters otherwise Orange will cut it
     };
 
-    orangeSms.then((responseOrangeSms)=>{
+    OrangeSms.then((responseOrangeSms)=>{
         console.log(responseOrangeSms);
         /* Devrait sortir un objet comme {message:sms sent},{message:401} (401 est un exemple de status code d'erreur
            {message:You have to provide all the keys of the object},{message:the object key must not have a value like null or undefined}
