@@ -61,7 +61,7 @@ const Sms = (req, res) => {
         sms_body: "LUZABU E-HOSPITAL => code: " + sms // String; Your message text to send, not much than 160 characters otherwise Orange will cut it
     };
 
-    OrangeSms.then((responseOrangeSms)=>{
+    OrangeSms(responseOrangeSms).then( () =>{
         console.log(responseOrangeSms);
         /* Devrait sortir un objet comme {message:sms sent},{message:401} (401 est un exemple de status code d'erreur
            {message:You have to provide all the keys of the object},{message:the object key must not have a value like null or undefined}
