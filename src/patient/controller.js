@@ -1,4 +1,5 @@
 const { Patient } = require("./model");
+const { ProfilMedical } = require("../carnet/models");
 const { Identifiant, bloquer } = require("../admin/models");
 const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
@@ -26,6 +27,7 @@ const createNewPatient = async (req, res, next) => {
       profilePicture,
       password,
     } = req.body;
+
     //removing blank spaces
     cardId = cardId.trim();
     firstName = firstName.trim();
@@ -40,6 +42,14 @@ const createNewPatient = async (req, res, next) => {
     profilePicture = profilePicture.trim();
     password = password;
 
+    //Expression reguliere date
+    const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+
+    // Valider la date
+    if (!dateRegex.test(birthdate)) {
+      console.log("Returning error: Invalid date format!!!");
+      return res.status(400).json({ error: "Invalid date format!!!" });
+    }
     //empty fields
     if (
       !(
@@ -74,6 +84,9 @@ const createNewPatient = async (req, res, next) => {
       return res
         .status(400)
         .json({ error: "Password must contain atleast 8 caracters!!!" });
+    } else if (!dateRegex.test(birthdate)) {
+      console.log("Returning error: Invalid date format!!!");
+      return res.status(400).json({ error: "Invalid date format!!!" });
     } else {
       //checking if CardId belongs to the system
       //checking if patient already exists
@@ -107,9 +120,25 @@ const createNewPatient = async (req, res, next) => {
         password: hashedPassword,
       });
       await newPatient.save();
-      return res
-        .status(201)
-        .json({ message: "User registered successfully!!" });
+
+      // create new profile medical
+      const newProfilMedical = new ProfilMedical({
+        firstName,
+        lastName,
+        email,
+        birthdate,
+        sex,
+        profession,
+        nationality,
+        address,
+        phoneNumber,
+        profilePicture,
+        patient: newPatient._id,
+      });
+      await newProfilMedical.save();
+      return res.status(201).json({
+        message: "User registered and Medical Profile created successfully!! ",
+      });
     }
   } catch (error) {
     console.error("Caught error:", error);
@@ -175,6 +204,47 @@ const getProfile = async (req, res) => {
       profilePicture: patient.profilePicture,
     });
   } catch (error) {
+    return res.status(401).send("Invalid token provided");
+  }
+};
+const getProfileMedical = async (req, res) => {
+  try {
+    const token =
+      req.body.token || req.query.token || req.headers["x-access-token"];
+    if (!token) {
+      console.log("Returning error: Authentication token is required!!");
+      return res.status(401).send("Authentication token is required!!");
+    }
+    const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
+    const profileMedical = await ProfilMedical.findOne({
+      patientId: decodedToken.patientId,
+    });
+    if (!profileMedical) {
+      console.log("Returning error: No profile medical found!!");
+      return res.status(404).send("No profile medical found!!");
+    }
+    const patient = await Patient.findById({ _id: profileMedical.patient });
+    if (!patient) {
+      console.log("Returning error: No patient found!!");
+      return res.status(404).send("No patient found!!");
+    }
+    return res.status(200).json({
+      firstName: patient.firstName,
+      lastName: patient.lastName,
+      birthdate: patient.birthdate,
+      sex: patient.sex,
+      profession: patient.profession,
+      age: profileMedical.age,
+      taille: profileMedical.taille,
+      poids: profileMedical.poids,
+      groupSanguin: profileMedical.groupSanguin,
+      allergies: profileMedical.allergies,
+      maladieChronique: profileMedical.maladieChronique,
+      antecedentFamilliaux: profileMedical.antecedentFamilliaux,
+      contactUrgent: profileMedical.contactUrgent,
+    });
+  } catch (error) {
+    console.error("Caught error:", error);
     return res.status(401).send("Invalid token provided");
   }
 };
@@ -250,4 +320,5 @@ module.exports = {
   authenticatePatient,
   getProfile,
   editProfile,
+  getProfileMedical,
 };
