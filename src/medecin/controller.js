@@ -74,7 +74,7 @@ const Sms = (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 const AccesCarnet = (req, res) => {
-    let { codeSMS, idCarte } = req.body;
+    let { codeSMS, cardId } = req.body;
 
     if(!codeSMS){
         return res.status(401).json({message: 'Entres le code envoyer au patient !'})
@@ -83,10 +83,10 @@ const AccesCarnet = (req, res) => {
         if(codeSMS != codesms.codesms){
             return res.status(401).json({message: 'Le code entrer est incorrect !'})
         }else{
-            if(!idCarte){
+            if(!cardId){
                 return res.status(401).json({message: 'Entres le code envoyer au patient !'})
             }else {
-                Carnet.findOne({idCarte: idCarte})
+                Carnet.findOne({cardId: cardId})
                     .then( carnet => {res.status(401).json(carnet)})
                     .cache(error => res.status(401).json({message: 'Entres le code envoyer au patient !'}))
             }
