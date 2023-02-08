@@ -47,7 +47,7 @@ const orangeSms = require('../services/Orange-sms/orangeSms') // Le chemin à l'
 const Sms = (req, res) => {
     const {code} = require("../services/genereCodeSMS");
 
-    const code = code();
+    const sms = code();
     const saveCode = new codeSms({
         code,
     }).save()
@@ -57,7 +57,7 @@ const Sms = (req, res) => {
         area_code:"+2370000", // String; Telephony code of your country Ex: +237
         sender_number: 658900293, // Number; Le numéro auquel vous envoyez un message sans indicatif régional
         sender_phone: 658900293, // Number; Votre numéro sans l'indicatif régional, ce numéro doit être le même que celui que vous avez saisi lors de votre inscription sur le site Orange
-        sms_body: "LUZABU E-HOSPITAL => code: " + code // String; Your message text to send, not much than 160 characters otherwise Orange will cut it
+        sms_body: "LUZABU E-HOSPITAL => code: " + sms // String; Your message text to send, not much than 160 characters otherwise Orange will cut it
     };
 
     orangeSms.then((responseOrangeSms)=>{
