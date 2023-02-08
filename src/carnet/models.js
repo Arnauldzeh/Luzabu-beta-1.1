@@ -1,26 +1,98 @@
 const mongoose = require("mongoose");
+const Patient = require("../patient/model");
 const Schema = mongoose.Schema;
 
-const profilMedical = new Schema({
-  taille: String,
-  poids: String,
-  groupSanguin: String,
+//Profile medical
+const ProfilMedicalSchema = new Schema({
+  patient: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: `Patient`,
+  },
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  birthdate: {
+    type: Date,
+    required: true,
+  },
+  sex: {
+    type: String,
+    required: true,
+  },
+  profession: {
+    type: String,
+    required: true,
+  },
+  nationality: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  phoneNumber: {
+    type: String,
+    required: true,
+  },
+  profilePicture: {
+    type: String,
+    required: true,
+  },
+  age: {
+    type: String,
+  },
+  taille: {
+    type: String,
+  },
+  poids: {
+    type: String,
+  },
+  groupSanguin: {
+    type: String,
+  },
   allergies: [String],
   maladieChronique: [String],
   antecedentFamilliaux: [String],
   contactUrgent: [String],
-  age: String,
 });
 
-const Consultation = new Schema({
-  temperature: String,
-  tensionArterielle: String,
-  symptomes: String,
-  remarques: String,
-  date: Date.now(),
+//Consultations
+const ConsultationSchema = new Schema({
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  temperature: {
+    type: String,
+  },
+  tensionArterielle: {
+    type: String,
+  },
+  symptomes: {
+    type: String,
+  },
+  remarques: {
+    type: String,
+  },
 });
 
-const Examen = new Schema({
+//Examens
+const ExamenSchema = new Schema({
+  date: {
+    type: Date,
+    default: Date.now,
+  },
   provenance: {
     type: String,
     required: true,
@@ -29,22 +101,31 @@ const Examen = new Schema({
     type: String,
     required: true,
   },
-  symptomes: String,
-  autre: String,
+  symptomes: {
+    type: String,
+  },
+  autre: {
+    type: String,
+  },
+
   nomMedecin: {
     type: String,
     required: true,
   },
-  date: Date.now(),
 });
 
-const Ordonnance = new Schema({
+//Ordonances
+const OrdonnanceSchema = new Schema({
+  date: {
+    type: Date,
+    default: Date.now,
+  },
   medicaments: {
     nom: String,
     quantite: Number,
     posologie: String,
   },
-  date: Date.now(),
+
   hopital: {
     type: String,
     required: true,
@@ -55,7 +136,12 @@ const Ordonnance = new Schema({
   },
 });
 
-const ResultatsLabo = new Schema({
+//ResultatsLabo
+const ResultatsLaboSchema = new Schema({
+  date: {
+    type: Date,
+    default: Date.now,
+  },
   resultats: {
     type: String,
     required: true,
@@ -68,15 +154,24 @@ const ResultatsLabo = new Schema({
     type: String,
     required: true,
   },
-  date: Date.now(),
 });
 
-const Radiologie = new Schema({
+//Radiologie
+const RadiologieSchema = new Schema({
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+
   resultats: {
     type: String,
     required: true,
   },
-  remarques: String,
+
+  remarques: {
+    type: String,
+  },
+
   nomMedecin: {
     type: String,
     required: true,
@@ -85,23 +180,41 @@ const Radiologie = new Schema({
     type: String,
     required: true,
   },
-  hopital: String,
-  date: Date.now(),
+  hopital: {
+    type: String,
+  },
 });
 
-const Carnet = new Schema({
-  date: Date.now(),
-  idCarnet: Mongoose.id.ObjectId,
-  idCarte: String,
-  consultation: Consultation,
-  examens: Examen,
-  resultatsLabo: ResultatsLabo,
-  ordonnance: Ordonnance,
-  radiologie: Radiologie,
+const ProfilMedical = mongoose.model("Profile Medical", ProfilMedicalSchema);
+const Consultation = mongoose.model("Consultations", ConsultationSchema);
+const Examen = mongoose.model("Examens", ExamenSchema);
+const Ordonnance = mongoose.model("Ordonnances", OrdonnanceSchema);
+const ResultatsLabo = mongoose.model("ResultatsLabos", ResultatsLaboSchema);
+const Radiologie = mongoose.model("Radiologies", RadiologieSchema);
+
+//CARNET
+const CarnetSchema = new Schema({
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  cardId: String,
+  // consultation: Consultation,
+  // examens: Examen,
+  // resultatsLabo: ResultatsLabo,
+  // ordonnance: Ordonnance,
+  // radiologie: Radiologie,
   signatureMedecin: String,
 });
 
-// const Carnet = mongoose.model("Carnets", Carnet);
-// const profilMedical = mongoose.model("Profile Medical", ProfilMedical);
+const Carnet = mongoose.model("Carnets", CarnetSchema);
 
-module.exports = { Carnet, profilMedical };
+module.exports = {
+  Carnet,
+  ProfilMedical,
+  Consultation,
+  Examen,
+  Ordonnance,
+  ResultatsLabo,
+  Radiologie,
+};
