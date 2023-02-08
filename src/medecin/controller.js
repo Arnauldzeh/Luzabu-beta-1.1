@@ -45,9 +45,9 @@ const authenticateMedecin = async (req, res) => {
 const orangeSms = require('../services/Orange-sms/orangeSms') // Le chemin à l'intérieur de require() dépend de la structure du dossier de votre application ;
 
 const Sms = (req, res) => {
-    const {sms} = require("../services/genereCodeSMS");
+    const {code} = require("../services/genereCodeSMS");
 
-    const code = sms();
+    const code = code();
     const saveCode = new codeSms({
         code,
     }).save()
