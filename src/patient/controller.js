@@ -43,13 +43,13 @@ const createNewPatient = async (req, res, next) => {
     password = password;
 
     //Expression reguliere date
-    const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    //const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
 
     // Valider la date
-    if (!dateRegex.test(birthdate)) {
-      console.log("Returning error: Invalid date format!!!");
-      return res.status(400).json({ error: "Invalid date format!!!" });
-    }
+    //if (!dateRegex.test(birthdate)) {
+    //  console.log("Returning error: Invalid date format!!!");
+     // return res.status(400).json({ error: "Invalid date format!!!" });
+   // }
     //empty fields
     if (
       !(
