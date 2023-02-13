@@ -5,7 +5,6 @@ const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
 const jwt = require("jsonwebtoken");
 const {
-  validateProfile,
   validateSignup,
   validateSignin,
 } = require("../middleware/dataValidation");
