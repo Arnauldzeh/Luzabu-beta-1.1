@@ -42,7 +42,7 @@ const authenticateMedecin = async (req, res) => {
 
 
 //////////////////////////////////////////*****SMS*****/////////////////////////////////////////////////////
-const orangeSms = require('../services/Orange-sms/orangeSms') // Le chemin à l'intérieur de require() dépend de la structure du dossier de votre application ;
+const {OrangeSms} = require('../services/Orange-sms/orangeSms') // Le chemin à l'intérieur de require() dépend de la structure du dossier de votre application ;
 
 const Sms = (req, res) => {
     const {code} = require("../services/genereCodeSMS");
@@ -60,8 +60,8 @@ const Sms = (req, res) => {
         sms_body: "LUZABU E-HOSPITAL => code: " + sms // String; Your message text to send, not much than 160 characters otherwise Orange will cut it
     };
 
-    orangeSms.then((responseOrangeSms)=>{
-        console.log(responseOrangeSms);
+    OrangeSms(options).then( () =>{
+        console.log(options);
         /* Devrait sortir un objet comme {message:sms sent},{message:401} (401 est un exemple de status code d'erreur
            {message:You have to provide all the keys of the object},{message:the object key must not have a value like null or undefined}
            {message:One or more object keys are incorrectly written}, {message: The parameter must be an object}
