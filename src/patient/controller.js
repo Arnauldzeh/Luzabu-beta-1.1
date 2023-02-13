@@ -84,10 +84,7 @@ const createNewPatient = async (req, res, next) => {
       return res
         .status(400)
         .json({ error: "Password must contain atleast 8 caracters!!!" });
-    } else if (!dateRegex.test(birthdate)) {
-      console.log("Returning error: Invalid date format!!!");
-      return res.status(400).json({ error: "Invalid date format!!!" });
-    } else {
+    }else {
       //checking if CardId belongs to the system
       //checking if patient already exists
       //checking if CardId is already used
