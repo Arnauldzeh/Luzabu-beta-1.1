@@ -43,13 +43,13 @@ const createNewPatient = async (req, res, next) => {
     password = password;
 
     //Expression reguliere date
-    const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    // const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
-    // Valider la date
-    if (!dateRegex.test(birthdate)) {
-      console.log("Returning error: Invalid date format!!!");
-      return res.status(400).json({ error: "Invalid date format!!!" });
-    }
+    // // Valider la date
+    // if (!dateRegex.test(birthdate)) {
+    //   console.log("Returning error: Invalid date format!!!");
+    //   return res.status(400).json({ error: "Invalid date format!!!" });
+    // }
     //empty fields
     if (
       !(
@@ -84,9 +84,6 @@ const createNewPatient = async (req, res, next) => {
       return res
         .status(400)
         .json({ error: "Password must contain atleast 8 caracters!!!" });
-    } else if (!dateRegex.test(birthdate)) {
-      console.log("Returning error: Invalid date format!!!");
-      return res.status(400).json({ error: "Invalid date format!!!" });
     } else {
       //checking if CardId belongs to the system
       //checking if patient already exists
@@ -225,13 +222,13 @@ const getProfileMedical = async (req, res) => {
       sex: patient.sex,
       profession: patient.profession,
       age: profileMedical.age,
-      taille: profileMedical.taille,
-      poids: profileMedical.poids,
-      groupSanguin: profileMedical.groupSanguin,
+      height: profileMedical.height,
+      weight: profileMedical.weight,
+      bloodGroup: profileMedical.bloodGroup,
       allergies: profileMedical.allergies,
-      maladieChronique: profileMedical.maladieChronique,
-      antecedentFamilliaux: profileMedical.antecedentFamilliaux,
-      contactUrgent: profileMedical.contactUrgent,
+      chronicIllnesses: profileMedical.chronicIllnesses,
+      familyHistories: profileMedical.familyHistories,
+      emergencyContacts: profileMedical.emergencyContacts,
     });
   } catch (error) {
     console.error("Caught error:", error);

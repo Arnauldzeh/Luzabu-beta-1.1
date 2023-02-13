@@ -7,7 +7,6 @@ const {
   editProfile,
   getProfileMedical,
 } = require("./controller");
-// const { validateProfile } = require("../middleware/dataValidation");
 
 const { verifyToken } = require("../middleware/auth");
 

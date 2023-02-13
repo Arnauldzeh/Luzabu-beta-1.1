@@ -13,22 +13,28 @@ const ProfilMedicalSchema = new Schema({
     type: String,
     default: "N/A",
   },
-  taille: {
+  height: {
     type: String,
     default: "N/A",
   },
-  poids: {
+  weight: {
     type: String,
     default: "N/A",
   },
-  groupSanguin: {
+  bloodGroup: {
     type: String,
     default: "N/A",
   },
-  allergies: [String],
-  maladieChronique: [String],
-  antecedentFamilliaux: [String],
-  contactUrgent: [
+
+  allergies: [
+    {
+      type: { type: String },
+      manifestation: { type: String },
+    },
+  ],
+  chronicIllnesses: [String],
+  familyHistories: [String],
+  emergencyContacts: [
     {
       nom: {
         type: String,
@@ -46,11 +52,11 @@ const ProfilMedicalSchema = new Schema({
         type: String,
         default: "N/A",
       },
-      adresse: {
+      address: {
         type: String,
         default: "N/A",
       },
-      lien: {
+      link: {
         type: String,
         default: "N/A",
       },
