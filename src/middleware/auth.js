@@ -3,7 +3,6 @@ const { TOKEN_KEY } = process.env;
 
 //verifier le token
 const verifyToken = async (req, res, next) => {
-  const token =
         const token = req.headers.authorization.split(' ')[1];
     //req.body.token || req.query.token || req.headers["authorization"];
   //checking if token is empty
