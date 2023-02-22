@@ -219,7 +219,11 @@ const getProfileMedical = async (req, res) => {
       lastName: patient.lastName,
       birthdate: patient.birthdate,
       sex: patient.sex,
+      phoneNumber: patient.phoneNumber,
+      profilePicture: patient.profilePicture,
       profession: patient.profession,
+      nationality: patient.nationality,
+      address: patient.address,
       age: profileMedical.age,
       height: profileMedical.height,
       weight: profileMedical.weight,
@@ -228,6 +232,7 @@ const getProfileMedical = async (req, res) => {
       chronicIllnesses: profileMedical.chronicIllnesses,
       familyHistories: profileMedical.familyHistories,
       emergencyContacts: profileMedical.emergencyContacts,
+    
     });
   } catch (error) {
     console.error("Caught error:", error);
