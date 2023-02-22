@@ -167,7 +167,6 @@ const authenticatePatient = async (req, res) => {
 //Afficher profile
 const getProfile = async (req, res) => {
   try {
-    const token =
       const token = req.headers.authorization.split(' ')[1];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
@@ -195,7 +194,7 @@ const getProfile = async (req, res) => {
 };
 const getProfileMedical = async (req, res) => {
   try {
-    const token =
+    
           const token = req.headers.authorization.split(' ')[1];
 //       req.body.token || req.query.token || req.headers["authorization"];
     if (!token) {
@@ -239,7 +238,7 @@ const getProfileMedical = async (req, res) => {
 //Mettre à jour le profile patient
 const editProfile = async (req, res) => {
   try {
-    const token =
+ 
           const token = req.headers.authorization.split(' ')[1];
 //       req.body.token || req.query.token || req.headers["authorization"];
     if (!token) {
