@@ -158,7 +158,9 @@ const authenticatePatient = async (req, res) => {
 //Afficher profile
 const getProfile = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
+    // const token = req.headers.authorization.split(" ")[1];
+    const token =
+      req.body.token || req.query.token || req.headers["authorization"];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -189,8 +191,9 @@ const getProfile = async (req, res) => {
 //
 const getProfileMedical = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    //       req.body.token || req.query.token || req.headers["authorization"];
+    // const token = req.headers.authorization.split(" ")[1];
+    const token =
+      req.body.token || req.query.token || req.headers["authorization"];
     if (!token) {
       console.log("Returning error: Authentication token is required!!");
       return res.status(401).send("Authentication token is required!!");
@@ -237,8 +240,9 @@ const getProfileMedical = async (req, res) => {
 //Mettre à jour le profile patient
 const editProfile = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    //       req.body.token || req.query.token || req.headers["authorization"];
+    // const token = req.headers.authorization.split(" ")[1];
+    const token =
+      req.body.token || req.query.token || req.headers["authorization"];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -307,7 +311,7 @@ const editProfile = async (req, res) => {
 //Create medicalProfile
 const createMedicalProfile = async (req, res) => {
   const token =
-    req.body.token || req.query.token || req.headers["x-access-token"];
+    req.body.token || req.query.token || req.headers["authorization"];
   if (!token) {
     return res.status(401).send("Authentication token is required!!");
   }
@@ -357,7 +361,7 @@ const createMedicalProfile = async (req, res) => {
 //modifier medical profile
 const editMedicalProfile = async (req, res) => {
   const token =
-    req.body.token || req.query.token || req.headers["x-access-token"];
+    req.body.token || req.query.token || req.headers["authorization"];
   if (!token) {
     return res.status(401).send("Authentication token is required!!");
   }
@@ -477,7 +481,7 @@ const editMedicalProfile = async (req, res) => {
 const getConsultation = async (req, res) => {
   try {
     const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
+      req.body.token || req.query.token || req.headers["authorization"];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -516,7 +520,7 @@ const getConsultation = async (req, res) => {
 const getOneConsultation = async (req, res) => {
   try {
     const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
+      req.body.token || req.query.token || req.headers["authorization"];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
