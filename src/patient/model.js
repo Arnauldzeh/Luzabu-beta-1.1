@@ -45,6 +45,7 @@ const PatientSchema = new Schema({
     type: String,
     required: true,
   },
+
   profilePicture: {
     type: String,
     required: true,

@@ -24,7 +24,12 @@ const NewcardId = async (req, res) => {
       const existingcardId = await Identifiant.findOne({ cardId });
 
       if (existingcardId) {
-        return res.status(404).json({ error: "cardId already exist" });
+        console.log("Returning error: Card already used!!");
+
+        return res
+          .status(404)
+          .json({ error: "cardId already exist" })
+          .then(console.log(`Status code: ${res.status}`));
       }
       const newcardId = new Identifiant({
         cardId,

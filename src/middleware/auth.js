@@ -12,7 +12,7 @@ const verifyToken = async (req, res, next) => {
   //si le token existe on verifie sa validité
   try {
     const decodedToken = await jwt.verify(token, TOKEN_KEY);
-    req.currentPatient = decodedToken;
+    req.currentUser = decodedToken;
   } catch (error) {
     return res.status(401).send("Invalid Token provided");
   }

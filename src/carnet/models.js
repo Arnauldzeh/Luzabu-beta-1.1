@@ -36,7 +36,7 @@ const ProfilMedicalSchema = new Schema({
   familyHistories: [String],
   emergencyContacts: [
     {
-      nom: {
+      name: {
         type: String,
         default: "N/A",
       },
@@ -64,11 +64,28 @@ const ProfilMedicalSchema = new Schema({
   ],
 });
 
-//Consultations
+// Consultations
 const ConsultationSchema = new Schema({
+  patientCardId: {
+    type: String,
+  },
+  nomMedecin: {
+    type: String,
+  },
+  heure: {
+    type: String,
+  },
   date: {
-    type: Date,
-    default: Date.now,
+    type: String,
+  },
+  age: {
+    type: String,
+  },
+  motifDeConsultation: {
+    type: String,
+  },
+  taille: {
+    type: String,
   },
   temperature: {
     type: String,
@@ -76,78 +93,137 @@ const ConsultationSchema = new Schema({
   tensionArterielle: {
     type: String,
   },
-  symptomes: {
+  poids: {
     type: String,
   },
-  remarques: {
+  pouls: {
     type: String,
+  },
+  oxygenSaturation: {
+    type: String,
+  },
+  symptomes: {
+    type: [String],
+  },
+  commentaire: {
+    type: [String],
+  },
+  diagnostique: {
+    type: [String],
+  },
+  remarques: {
+    type: [String],
   },
 });
 
 //Examens
 const ExamenSchema = new Schema({
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-  provenance: {
-    type: String,
-    required: true,
-  },
-  typeExamen: {
-    type: String,
-    required: true,
-  },
-  symptomes: {
+  idconsulation: {
     type: String,
   },
-  autre: {
-    type: String,
-  },
-
   nomMedecin: {
     type: String,
+  },
+  heure: {
+    type: String,
+  },
+  date: {
+    type: String,
+  },
+  patientCardId: {
+    type: String,
+  },
+  nom: {
+    type: String,
     required: true,
   },
+  consigne: {
+    type: String,
+    required: true,
+  },
+  // Autres champs nécessaires
 });
 
 //Ordonances
 const OrdonnanceSchema = new Schema({
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-  medicaments: {
-    nom: String,
-    quantite: Number,
-    posologie: String,
-  },
-
-  hopital: {
-    type: String,
-    required: true,
-  },
   nomMedecin: {
     type: String,
-    required: true,
   },
+  heure: {
+    type: String,
+  },
+  date: {
+    type: String,
+  },
+  patientCardId: {
+    type: String,
+  },
+  medicaments: [
+    {
+      nom: {
+        type: String,
+        required: true,
+      },
+      famille: {
+        type: String,
+        required: true,
+      },
+      forme: {
+        type: String,
+        required: true,
+      },
+      quantité: {
+        type: String,
+        required: true,
+      },
+      posologie: {
+        type: String,
+        required: true,
+      },
+      observation: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 //ResultatsLabo
 const ResultatsLaboSchema = new Schema({
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-  resultats: {
-    type: String,
-    required: true,
-  },
-  hopital: {
-    type: String,
-    required: true,
-  },
   nomMedecin: {
+    type: String,
+  },
+  heure: {
+    type: String,
+  },
+  date: {
+    type: String,
+  },
+  patientCardId: {
+    type: String,
+  },
+  examenLabo: [
+    {
+      typeDeTeste: {
+        type: String,
+        required: true,
+      },
+      resultats: {
+        type: String,
+        required: true,
+      },
+      nomDuLabo: {
+        type: String,
+        required: true,
+      },
+      remarques: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+
+  hopital: {
     type: String,
     required: true,
   },
@@ -155,59 +231,52 @@ const ResultatsLaboSchema = new Schema({
 
 //Radiologie
 const RadiologieSchema = new Schema({
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-
-  resultats: {
-    type: String,
-    required: true,
-  },
-
-  remarques: {
-    type: String,
-  },
-
   nomMedecin: {
     type: String,
-    required: true,
   },
-  laboratoire: {
+  heure: {
     type: String,
-    required: true,
   },
+  date: {
+    type: String,
+  },
+  patientCardId: {
+    type: String,
+  },
+
+  radiologie: [
+    {
+      nom: {
+        type: String,
+        required: true,
+      },
+      resultats: {
+        type: String,
+        required: true,
+      },
+      nomDuLabo: {
+        type: String,
+        required: true,
+      },
+      remarques: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
   hopital: {
     type: String,
   },
 });
 
-const ProfilMedical = mongoose.model("Profile Medical", ProfilMedicalSchema);
+const ProfilMedical = mongoose.model("Profile Medicals", ProfilMedicalSchema);
 const Consultation = mongoose.model("Consultations", ConsultationSchema);
 const Examen = mongoose.model("Examens", ExamenSchema);
 const Ordonnance = mongoose.model("Ordonnances", OrdonnanceSchema);
 const ResultatsLabo = mongoose.model("ResultatsLabos", ResultatsLaboSchema);
 const Radiologie = mongoose.model("Radiologies", RadiologieSchema);
 
-//CARNET
-const CarnetSchema = new Schema({
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-  cardId: String,
-  // consultation: Consultation,
-  // examens: Examen,
-  // resultatsLabo: ResultatsLabo,
-  // ordonnance: Ordonnance,
-  // radiologie: Radiologie,
-  signatureMedecin: String,
-});
-
-const Carnet = mongoose.model("Carnets", CarnetSchema);
-
 module.exports = {
-  Carnet,
   ProfilMedical,
   Consultation,
   Examen,
