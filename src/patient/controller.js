@@ -158,7 +158,7 @@ const authenticatePatient = async (req, res) => {
 //Afficher profile
 const getProfile = async (req, res) => {
   try {
-      const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization.split(" ")[1];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -189,9 +189,8 @@ const getProfile = async (req, res) => {
 //
 const getProfileMedical = async (req, res) => {
   try {
-    
-          const token = req.headers.authorization.split(' ')[1];
-//       req.body.token || req.query.token || req.headers["authorization"];
+    const token = req.headers.authorization.split(" ")[1];
+    //       req.body.token || req.query.token || req.headers["authorization"];
     if (!token) {
       console.log("Returning error: Authentication token is required!!");
       return res.status(401).send("Authentication token is required!!");
@@ -228,7 +227,6 @@ const getProfileMedical = async (req, res) => {
       chronicIllnesses: profileMedical.chronicIllnesses,
       familyHistories: profileMedical.familyHistories,
       emergencyContacts: profileMedical.emergencyContacts,
-    
     });
   } catch (error) {
     console.error("Caught error:", error);
@@ -239,9 +237,8 @@ const getProfileMedical = async (req, res) => {
 //Mettre à jour le profile patient
 const editProfile = async (req, res) => {
   try {
- 
-          const token = req.headers.authorization.split(' ')[1];
-//       req.body.token || req.query.token || req.headers["authorization"];
+    const token = req.headers.authorization.split(" ")[1];
+    //       req.body.token || req.query.token || req.headers["authorization"];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -500,6 +497,7 @@ const getConsultation = async (req, res) => {
     }
 
     const consultationsData = consultations.map((consultation) => ({
+      id: consultation._id,
       heure: consultation.heure,
       date: consultation.date,
       nomMedecin: consultation.nomMedecin,
@@ -528,6 +526,8 @@ const getOneConsultation = async (req, res) => {
     }
 
     const consultationId = req.params.id; // Récupération de l'id de la consultation à afficher
+    //const consultationId = req.params["id"];
+
     const consultation = await Consultation.findOne({
       _id: consultationId,
       patientCardId: decodedToken.cardId,
@@ -543,7 +543,6 @@ const getOneConsultation = async (req, res) => {
     });
   } catch (error) {
     console.error("Caught error:", error);
-
     return res.status(401).send("Invalid token provided");
   }
 };
