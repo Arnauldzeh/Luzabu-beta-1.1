@@ -69,10 +69,10 @@ const ConsultationSchema = new Schema({
   patientCardId: {
     type: String,
   },
-  nomMedecin: {
+  doctorName: {
     type: String,
   },
-  heure: {
+  time: {
     type: String,
   },
   date: {
@@ -81,37 +81,37 @@ const ConsultationSchema = new Schema({
   age: {
     type: String,
   },
-  motifDeConsultation: {
+  reasonForConsultation: {
     type: String,
   },
-  taille: {
+  height: {
     type: String,
   },
   temperature: {
     type: String,
   },
-  tensionArterielle: {
+  bloodPressure: {
     type: String,
   },
-  poids: {
+  weight: {
     type: String,
   },
-  pouls: {
+  pulse: {
     type: String,
   },
   oxygenSaturation: {
     type: String,
   },
-  symptomes: {
+  symptoms: {
     type: [String],
   },
-  commentaire: {
+  comments: {
     type: [String],
   },
-  diagnostique: {
+  diagnosis: {
     type: [String],
   },
-  remarques: {
+  remarks: {
     type: [String],
   },
 });

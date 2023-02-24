@@ -497,10 +497,11 @@ const getConsultation = async (req, res) => {
     }
 
     const consultationsData = consultations.map((consultation) => ({
-      id: consultation._id,
-      heure: consultation.heure,
-      date: consultation.date,
-      nomMedecin: consultation.nomMedecin,
+      // id: consultation._id,
+      // time: consultation.time,
+      // date: consultation.date,
+      // doctorName: consultation.doctorName,
+      consultation,
     }));
 
     return res.status(200).json(consultationsData);

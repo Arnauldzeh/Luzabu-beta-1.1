@@ -172,20 +172,21 @@ const newConsultation = async (req, res) => {
     // Récupérer les données de consultation à partir du corps de la requête
     let {
       patientCardId,
-      heure,
+
+      time,
       date,
       age,
-      motifDeConsultation,
-      taille,
+      reasonForConsultation,
+      height,
       temperature,
-      tensionArterielle,
-      poids,
-      pouls,
+      bloodPressure,
+      weight,
+      pulse,
       oxygenSaturation,
-      symptomes,
-      commentaire,
-      diagnostique,
-      remarques,
+      symptoms,
+      comments,
+      diagnosis,
+      remarks,
     } = req.body;
 
     const token =
@@ -203,28 +204,28 @@ const newConsultation = async (req, res) => {
     });
 
     // Concaténer le prénom et le nom du médecin pour obtenir le nom complet
-    const nomMedecin = `Dr. ${medecin.firstName} ${medecin.lastName}`;
+    const doctorName = `Dr. ${medecin.firstName} ${medecin.lastName}`;
     // Obtenir l'heure et la date actuelles
     date = new Date().toLocaleDateString();
-    heure = new Date().toLocaleTimeString();
+    time = new Date().toLocaleTimeString();
     // Créer une nouvelle instance de consultation à partir des données de la requête
     const nouvelleConsultation = new Consultation({
       patientCardId,
-      nomMedecin,
-      heure,
+      doctorName,
+      time,
       date,
       age,
-      motifDeConsultation,
-      taille,
+      reasonForConsultation,
+      height,
       temperature,
-      tensionArterielle,
-      poids,
-      pouls,
+      bloodPressure,
+      weight,
+      pulse,
       oxygenSaturation,
-      symptomes,
-      commentaire,
-      diagnostique,
-      remarques,
+      symptoms,
+      comments,
+      diagnosis,
+      remarks,
     });
 
     // Enregistrer la nouvelle consultation dans la base de données
