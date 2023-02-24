@@ -5,9 +5,11 @@ const Schema = mongoose.Schema;
 
 //Profile medical
 const ProfilMedicalSchema = new Schema({
-  patient: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: `Patient`,
+  patientObjId: {
+    type: String,
+  },
+  patientCardId: {
+    type: String,
   },
   age: {
     type: String,
@@ -28,8 +30,8 @@ const ProfilMedicalSchema = new Schema({
 
   allergies: [
     {
-      type: { type: String },
-      manifestation: { type: String },
+      type: { type: String, default: "N/A" },
+      manifestation: { type: String, default: "N/A" },
     },
   ],
   chronicIllnesses: [String],

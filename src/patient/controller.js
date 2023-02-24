@@ -142,7 +142,11 @@ const authenticatePatient = async (req, res) => {
       if (!passwordMatch) {
         return res.status(400).json({ message: "Invalid password" });
       }
-      const tokenData = { patientId: fetchedPatient._id, cardId };
+      //generation du token en utilisant le matricule et l'identifiant de la bd
+      const tokenData = {
+        cardId: fetchedPatient.cardId,
+        patientId: fetchedPatient._id,
+      };
       const token = await createToken(tokenData);
 
       return res.status(200).json({
@@ -200,13 +204,13 @@ const getProfileMedical = async (req, res) => {
     }
     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
     const profileMedical = await ProfilMedical.findOne({
-      patientId: decodedToken.patientId,
+      patient: decodedToken.cardId,
     });
     if (!profileMedical) {
       console.log("Returning error: No profile medical found!!");
       return res.status(404).send("No profile medical found!!");
     }
-    const patient = await Patient.findById({ _id: profileMedical.patient });
+    const patient = await Patient.findOne({ cardId: profileMedical.patient });
     if (!patient) {
       console.log("Returning error: No patient found!!");
       return res.status(404).send("No patient found!!");
@@ -308,7 +312,6 @@ const editProfile = async (req, res) => {
   }
 };
 
-//Create medicalProfile
 const createMedicalProfile = async (req, res) => {
   const token =
     req.body.token || req.query.token || req.headers["authorization"];
@@ -316,17 +319,25 @@ const createMedicalProfile = async (req, res) => {
     return res.status(401).send("Authentication token is required!!");
   }
   const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
-  const patient = await Patient.findById({ _id: decodedToken.patientId });
+  const patient = await Patient.findOne({ cardId: decodedToken.cardId });
   if (!patient) {
     return res.status(404).json({ error: "User not found!!" });
   }
-  const existingProfile = await ProfilMedical.findOne({ patient: patient._id });
+
+  const existingProfile = await ProfilMedical.findOne({
+    patientCardId: decodedToken.cardId,
+  });
   if (existingProfile) {
     return res
       .status(409)
       .json({ error: "Medical profile already exists for the patient!!" });
   } else {
-    const {
+    // Créer un objet vide pour le profil médical
+    let profile = new ProfilMedical({
+      patientObjId: patient._id,
+      patientCardId: patient.cardId,
+    });
+    let {
       age,
       weight,
       height,
@@ -336,25 +347,43 @@ const createMedicalProfile = async (req, res) => {
       familyHistories,
       emergencyContacts,
     } = req.body;
-    const profile = new ProfilMedical({
-      patient: patient._id,
-      age,
-      weight,
-      height,
-      bloodGroup,
-      allergies,
-      chronicIllnesses,
-      familyHistories,
-      emergencyContacts,
-    });
-  }
-
-  try {
-    const savedProfile = await profile.save();
-    //Medical Profile created successfully
-    res.json(savedProfile);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Ajouter les champs facultatifs s'ils sont présents dans la requête
+    if (age) {
+      profile.age = age;
+    }
+    if (weight) {
+      profile.weight = weight;
+    }
+    if (height) {
+      profile.height = height;
+    }
+    if (bloodGroup) {
+      profile.bloodGroup = bloodGroup;
+    }
+    if (allergies) {
+      profile.allergies = allergies;
+    }
+    if (chronicIllnesses) {
+      profile.chronicIllnesses = chronicIllnesses;
+    }
+    if (familyHistories) {
+      profile.familyHistories = familyHistories;
+    }
+    if (emergencyContacts) {
+      profile.emergencyContacts = emergencyContacts;
+    }
+    try {
+      const savedProfile = await profile.save();
+      console.log("Medical profile created successfully");
+      res.status(201).json({ message: "Medical profile created successfully" });
+    } catch (error) {
+      console.error("Caught error:", error);
+      res.status(500).json({ error: error.message });
+    }
+    // Ajout de la réponse pour le cas où le profil médical existe déjà
+    return res
+      .status(409)
+      .json({ error: "Medical profile already exists for the patient!!" });
   }
 };
 
@@ -366,13 +395,13 @@ const editMedicalProfile = async (req, res) => {
     return res.status(401).send("Authentication token is required!!");
   }
   const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
-  const patient = await Patient.findById({ _id: decodedToken.patientId });
+  const patient = await Patient.findOne({ cardId: decodedToken.cardId });
   if (!patient) {
     return res.status(404).json({ error: "User not found!!" });
   }
 
   const profileMedical = await ProfilMedical.findOne({
-    patientId: patient._id,
+    patient: patient.cardId,
   });
   if (!profileMedical) {
     return res.status(404).json({ error: "Medical profile not found!!" });
@@ -511,7 +540,7 @@ const getConsultation = async (req, res) => {
     return res.status(200).json(consultationsData);
   } catch (error) {
     console.error("Caught error:", error);
-    return res.status(401).send("Invalid token provided");
+    return res.status(401).send("An error occured, try again");
   }
 };
 
