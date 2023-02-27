@@ -8,6 +8,7 @@ const ProfilMedicalSchema = new Schema({
   patientObjId: {
     type: String,
   },
+
   patientCardId: {
     type: String,
   },
@@ -69,6 +70,9 @@ const ProfilMedicalSchema = new Schema({
 // Consultations
 const ConsultationSchema = new Schema({
   patientCardId: {
+    type: String,
+  },
+  doctorMatricule: {
     type: String,
   },
   doctorName: {
@@ -270,6 +274,24 @@ const RadiologieSchema = new Schema({
     type: String,
   },
 });
+//Notification
+const NotificationSchema = new Schema({
+  doctorMatricule: {
+    type: String,
+  },
+  nomMedecin: {
+    type: String,
+  },
+  patientCardId: {
+    type: String,
+  },
+  date: {
+    type: String,
+  },
+  activity: {
+    type: String,
+  },
+});
 
 const ProfilMedical = mongoose.model("Profile Medicals", ProfilMedicalSchema);
 const Consultation = mongoose.model("Consultations", ConsultationSchema);
@@ -277,6 +299,7 @@ const Examen = mongoose.model("Examens", ExamenSchema);
 const Ordonnance = mongoose.model("Ordonnances", OrdonnanceSchema);
 const ResultatsLabo = mongoose.model("ResultatsLabos", ResultatsLaboSchema);
 const Radiologie = mongoose.model("Radiologies", RadiologieSchema);
+const Notification = mongoose.model("Notifications", NotificationSchema);
 
 module.exports = {
   ProfilMedical,
@@ -285,4 +308,5 @@ module.exports = {
   Ordonnance,
   ResultatsLabo,
   Radiologie,
+  Notification,
 };

@@ -58,6 +58,9 @@ const medecinSchema = new Schema({
     type: String,
     required: true,
   },
+  profilePicture: {
+    type: String,
+  },
   password: {
     type: String,
     required: true,
