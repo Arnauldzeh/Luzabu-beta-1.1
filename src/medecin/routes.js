@@ -9,6 +9,7 @@ const {
   newOrdonnance,
   newResultatsLabo,
   newRadiologie,
+  getAllConsultations,
 } = require("./controller");
 
 const { verifyToken } = require("../middleware/auth");
@@ -21,6 +22,8 @@ router.get("/profile", verifyToken, getProfile);
 router.get("/profileMedical", verifyToken, getProfileMedicalPatient);
 //Enregistrer consultation
 router.post("/newConsultation", verifyToken, newConsultation);
+//Enregistrer consultation
+router.post("/getAllConsultations", verifyToken, getAllConsultations);
 //Enregistrer Examen
 router.post("/newExamen", verifyToken, newExamen);
 //Enregistrer Ordonnance

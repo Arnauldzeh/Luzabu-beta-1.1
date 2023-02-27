@@ -205,12 +205,15 @@ const newConsultation = async (req, res) => {
 
     // Concaténer le prénom et le nom du médecin pour obtenir le nom complet
     const doctorName = `Dr. ${medecin.firstName} ${medecin.lastName}`;
+    //
+    doctorMatricule = medecin.matricule;
     // Obtenir l'heure et la date actuelles
     date = new Date().toLocaleDateString();
     time = new Date().toLocaleTimeString();
     // Créer une nouvelle instance de consultation à partir des données de la requête
     const nouvelleConsultation = new Consultation({
       patientCardId,
+      doctorMatricule,
       doctorName,
       time,
       date,
@@ -242,6 +245,49 @@ const newConsultation = async (req, res) => {
       error:
         "Une erreur est survenue lors de l'enregistrement de la consultation.",
     });
+  }
+};
+
+//Afficher toutes les consultations effectué par un medecin
+
+//Afficher toutes les consultations
+const getAllConsultations = async (req, res) => {
+  try {
+    const token =
+      req.body.token || req.query.token || req.headers["authorization"];
+    if (!token) {
+      return res.status(401).send("Authentication token is required!!");
+    }
+    const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
+    // Récupérer le médecin connecté à partir de la session utilisateur
+    const medecin = await Medecin.findOne({
+      matricule: decodedToken.matricule,
+    });
+
+    if (!medecin) {
+      return res.status(404).send("No user found!!");
+    }
+
+    const consultations = await Consultation.find({
+      doctorMatricule: decodedToken.matricule,
+    }); // Ajout de .toArray() pour obtenir un tableau de consultations
+
+    if (!consultations) {
+      return res.status(404).send("No consultation found!!");
+    }
+
+    const consultationsData = consultations.map((consultation) => ({
+      // id: consultation._id,
+      // time: consultation.time,
+      // date: consultation.date,
+      // doctorName: consultation.doctorName,
+      consultation,
+    }));
+
+    return res.status(200).json(consultationsData);
+  } catch (error) {
+    console.error("Caught error:", error);
+    return res.status(401).send("An error occured, try again");
   }
 };
 
@@ -550,4 +596,5 @@ module.exports = {
   newOrdonnance,
   newResultatsLabo,
   newRadiologie,
+  getAllConsultations,
 };
