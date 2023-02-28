@@ -21,6 +21,10 @@ const medecinSchema = new Schema({
     required: true,
   },
   birthdate: {
+    type: Date,
+    required: true,
+  },
+  birthPlace: {
     type: String,
     required: true,
   },
@@ -37,29 +41,28 @@ const medecinSchema = new Schema({
     type: String,
     required: true,
   },
-  generalist: {
+  city: {
     type: String,
     required: true,
   },
-  specialist: {
+  qualification: {
     type: String,
     required: true,
   },
 
-  schoolCertificate: {
-    type: String,
-    required: true,
-  },
-  privateAutorisation: {
-    type: String,
-    required: true,
-  },
+  certificate: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
   hopitalName: {
     type: String,
     required: true,
   },
   profilePicture: {
     type: String,
+    required: true,
   },
   password: {
     type: String,

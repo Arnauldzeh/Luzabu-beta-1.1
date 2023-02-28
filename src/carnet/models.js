@@ -82,7 +82,9 @@ const ConsultationSchema = new Schema({
     type: String,
   },
   date: {
-    type: String,
+    type: Date,
+    required: true,
+    default: Date.now,
   },
   age: {
     type: String,
@@ -293,13 +295,13 @@ const NotificationSchema = new Schema({
   },
 });
 
-const ProfilMedical = mongoose.model("Profile Medicals", ProfilMedicalSchema);
-const Consultation = mongoose.model("Consultations", ConsultationSchema);
-const Examen = mongoose.model("Examens", ExamenSchema);
-const Ordonnance = mongoose.model("Ordonnances", OrdonnanceSchema);
-const ResultatsLabo = mongoose.model("ResultatsLabos", ResultatsLaboSchema);
-const Radiologie = mongoose.model("Radiologies", RadiologieSchema);
-const Notification = mongoose.model("Notifications", NotificationSchema);
+const ProfilMedical = ProfilMedicalSchema;
+const Consultation = ConsultationSchema;
+const Examen = ExamenSchema;
+const Ordonnance = OrdonnanceSchema;
+const ResultatsLabo = ResultatsLaboSchema;
+const Radiologie = RadiologieSchema;
+const Notification = NotificationSchema;
 
 module.exports = {
   ProfilMedical,

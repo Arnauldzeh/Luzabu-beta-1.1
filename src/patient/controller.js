@@ -70,9 +70,6 @@ const createNewPatient = async (req, res, next) => {
         .status(400)
         .json({ error: "Password must contain atleast 8 caracters!!!" });
     } else {
-      //checking if CardId belongs to the system
-      //checking if patient already exists
-      //checking if CardId is already used
       const existingNewId = await Identifiant.findOne({ cardId });
       const existingPatient = await Patient.findOne({ cardId });
       const existingEmail = await Patient.findOne({ email });
@@ -104,12 +101,7 @@ const createNewPatient = async (req, res, next) => {
         profilePicture,
         password: hashedPassword,
       });
-      // create new profile medical
-      // const newProfilMedical = new ProfilMedical({
-      //   patient: newPatient._id,
-      // });
       await newPatient.save();
-      // await newProfilMedical.save();
 
       return res.status(201).json({
         message: "User registered successfully!! ",

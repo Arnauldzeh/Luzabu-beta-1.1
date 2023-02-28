@@ -175,7 +175,7 @@ const unblockcardId = async (req, res) => {
 };
 
 //
-//Create neww patient
+//Create neww Doctor
 const NouveauMedecin = async (req, res, next) => {
   try {
     let {
@@ -184,14 +184,15 @@ const NouveauMedecin = async (req, res, next) => {
       lastName,
       email,
       birthdate,
+      birthPlace,
       sex,
       nationality,
       phoneNumber,
-      generalist,
-      specialist,
-      schoolCertificate,
-      privateAutorisation,
+      city,
+      qualification,
+      certificate,
       hopitalName,
+      profilePicture,
       password,
     } = req.body;
 
@@ -200,16 +201,13 @@ const NouveauMedecin = async (req, res, next) => {
     firstName = firstName.trim();
     lastName = lastName.trim();
     email = email.trim();
-    birthdate = birthdate.trim();
+    birthPlace = birthPlace.trim();
     sex = sex.trim();
     nationality = nationality.trim();
     phoneNumber = phoneNumber.trim();
-    generalist = generalist.trim();
-    specialist = specialist.trim();
-    schoolCertificate = schoolCertificate.trim();
-    privateAutorisation = privateAutorisation.trim();
+    city = city.trim();
+    qualification = qualification.trim();
     hopitalName = hopitalName.trim();
-    password = password;
 
     //testing empty fields
     if (
@@ -219,20 +217,22 @@ const NouveauMedecin = async (req, res, next) => {
         lastName &&
         email &&
         birthdate &&
+        birthPlace &&
         sex &&
         nationality &&
         phoneNumber &&
-        generalist &&
-        specialist &&
-        schoolCertificate &&
-        privateAutorisation &&
+        qualification &&
+        certificate &&
+        city &&
         hopitalName &&
+        profilePicture &&
         password
       )
     ) {
       return res.status(400).json({ error: "Empty input fields!!!" });
-    } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
-      return res.status(400).json({ error: "Invalid name!!!" });
+      // } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
+      //   return res.status(400).json({ error: "Invalid name!!!" });
+      // }
     } else if (
       !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
     ) {
@@ -242,9 +242,6 @@ const NouveauMedecin = async (req, res, next) => {
         .status(400)
         .json({ error: "Password must contain atleast 8 caracters!!!" });
     } else {
-      //checking if CardId belongs to the system
-      //checking if patient already exists
-      //checking if CardId is already used
       const existingMatricule = await Matricule.findOne({ matricule });
       const existingMedecin = await Medecin.findOne({ matricule });
       const existingEmail = await Medecin.findOne({ email });
@@ -267,21 +264,25 @@ const NouveauMedecin = async (req, res, next) => {
         lastName,
         email,
         birthdate,
+        birthPlace,
         sex,
         nationality,
         phoneNumber,
-        generalist,
-        specialist,
-        schoolCertificate,
-        privateAutorisation,
+        qualification,
+        certificate,
+        city,
         hopitalName,
+        profilePicture,
         password: hashedPassword,
       });
       const addedDoctor = await newMedecin.save();
-      return res.status(200).json({ message: "User registered successfully" });
+      return res
+        .status(200)
+        .json({ message: "User registered successfully", addedDoctor });
     }
   } catch (error) {
-    return res.status(500).json({ error: "The server has crashed" });
+    console.log({ message: error });
+    return res.status(500).json({ error: "An error occured" });
   }
 };
 

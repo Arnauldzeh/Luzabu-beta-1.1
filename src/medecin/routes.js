@@ -4,12 +4,8 @@ const {
   authenticateMedecin,
   getProfile,
   getProfileMedicalPatient,
-  newConsultation,
-  newExamen,
-  newOrdonnance,
-  newResultatsLabo,
-  newRadiologie,
-  getAllConsultations,
+  updatePatient,
+  editProfile,
 } = require("./controller");
 
 const { verifyToken } = require("../middleware/auth");
@@ -18,22 +14,21 @@ const { verifyToken } = require("../middleware/auth");
 router.post("/signin", authenticateMedecin);
 //Consulter profile
 router.get("/profile", verifyToken, getProfile);
+//Consulter profile
+router.post("/editProfile", verifyToken, editProfile);
+
 //Consulter profile Medical
 router.get("/profileMedical", verifyToken, getProfileMedicalPatient);
+
 //Enregistrer consultation
-router.post("/newConsultation", verifyToken, newConsultation);
-//Enregistrer consultation
-router.post("/getAllConsultations", verifyToken, getAllConsultations);
+router.post("/newConsultation", verifyToken, updatePatient);
 //Enregistrer Examen
-router.post("/newExamen", verifyToken, newExamen);
+router.post("/newExamen", verifyToken, updatePatient);
 //Enregistrer Ordonnance
-router.post("/newOrdonnance", verifyToken, newOrdonnance);
+router.post("/newOrdonnance", verifyToken, updatePatient);
 //Enregistrer ResultatsLabo
-router.post("/newResultatsLabo", verifyToken, newResultatsLabo);
+router.post("/newResultatsLabo", verifyToken, updatePatient);
 //Enregistrer Radiologie
-router.post("/newRadiologie", verifyToken, newRadiologie);
-///
-///
-///
+router.post("/newRadiologie", verifyToken, updatePatient);
 
 module.exports = router;
