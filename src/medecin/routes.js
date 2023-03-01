@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const {
   authenticateMedecin,
-  getProfile,
-  getProfileMedicalPatient,
+  getMedecin,
+  getPatient,
   updatePatient,
-  editProfile,
+  editProfileMedecin,
 } = require("./controller");
 
 const { verifyToken } = require("../middleware/auth");
@@ -13,12 +13,12 @@ const { verifyToken } = require("../middleware/auth");
 //Signin
 router.post("/signin", authenticateMedecin);
 //Consulter profile
-router.get("/profile", verifyToken, getProfile);
+router.get("/profile", verifyToken, getMedecin);
 //Consulter profile
-router.post("/editProfile", verifyToken, editProfile);
+router.post("/editProfile", verifyToken, editProfileMedecin);
 
 //Consulter profile Medical
-router.get("/profileMedical", verifyToken, getProfileMedicalPatient);
+router.get("/profileMedical", verifyToken, getPatient);
 
 //Enregistrer consultation
 router.post("/newConsultation", verifyToken, updatePatient);

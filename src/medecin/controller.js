@@ -5,7 +5,6 @@ const { createToken } = require("../services/creerToken");
 const jwt = require("jsonwebtoken");
 //
 const { Patient } = require("../patient/model");
-const { ProfilMedical } = require("../carnet/models");
 const { bloquer } = require("../admin/models");
 
 //signin
@@ -45,7 +44,7 @@ const authenticateMedecin = async (req, res) => {
 };
 
 //Afficher son profile
-const getProfile = async (req, res) => {
+const getMedecin = async (req, res) => {
   try {
     //vérification de l'identité du médecin par son matricule entré
     const token =
@@ -62,29 +61,15 @@ const getProfile = async (req, res) => {
     if (!medecin) {
       return res.status(404).send("No Doctor found!!");
     } else {
-      return res.status(200).json({
-        matricule: medecin.matricule,
-        firstName: medecin.firstName,
-        lastName: medecin.lastName,
-        email: medecin.email,
-        birthdate: medecin.birthdate,
-        sex: medecin.sex,
-        nationality: medecin.nationality,
-        phoneNumber: medecin.phoneNumber,
-        generalist: medecin.generalist,
-        specialist: medecin.specialist,
-        schoolCertificate: medecin.schoolCertificate,
-        privateAutorisation: medecin.privateAutorisation,
-        hopitalName: medecin.hopitalName,
-      });
+      return res.status(200).json({ medecin });
     }
   } catch (error) {
     return res.status(401).send({ error: "An error occured" });
   }
 };
 
-//Mettre à jour le profile patient
-const editProfile = async (req, res) => {
+//Mettre à jour le profile Medecin
+const editProfileMedecin = async (req, res) => {
   try {
     //vérification de l'identité du médecin par son matricule entré
     const token =
@@ -173,11 +158,11 @@ const editProfile = async (req, res) => {
   }
 };
 
-// Afficher le profil médical d'un patient
-const getProfileMedicalPatient = async (req, res) => {
+// RECUPERER L'OBJET PATIENT
+const getPatient = async (req, res) => {
   try {
     const { cardId } = req.body;
-    const fetchedPatient = await Patient.findOne({ cardId });
+    const patient = await Patient.findOne({ cardId });
     const isBlockedCardId = await bloquer.findOne({ cardId });
 
     const token =
@@ -195,7 +180,7 @@ const getProfileMedicalPatient = async (req, res) => {
     if (!medecin) {
       return res.status(404).send("No Doctor found!!");
     } else {
-      if (!fetchedPatient) {
+      if (!patient) {
         console.log("Returning error: No Patient found!!");
         return res.status(404).json({ error: "No Patient found!!" });
       } else if (isBlockedCardId) {
@@ -204,30 +189,7 @@ const getProfileMedicalPatient = async (req, res) => {
           .status(400)
           .json({ error: "This account has been suspended!!" });
       } else {
-        const profileMedical = await ProfilMedical.findOne({
-          patientId: fetchedPatient._id,
-        });
-
-        if (!profileMedical) {
-          console.log("Returning error: No medical profile found!!");
-          return res.status(404).send("No medical profile found!!");
-        }
-
-        return res.status(200).json({
-          firstName: fetchedPatient.firstName,
-          lastName: fetchedPatient.lastName,
-          birthdate: fetchedPatient.birthdate,
-          sex: fetchedPatient.sex,
-          profession: fetchedPatient.profession,
-          age: profileMedical.age,
-          height: profileMedical.height,
-          weight: profileMedical.weight,
-          bloodGroup: profileMedical.bloodGroup,
-          allergies: profileMedical.allergies,
-          chronicIllnesses: profileMedical.chronicIllnesses,
-          familyHistories: profileMedical.familyHistories,
-          emergencyContacts: profileMedical.emergencyContacts,
-        });
+        return res.status(200).json({ patient });
       }
     }
   } catch (error) {
@@ -236,6 +198,7 @@ const getProfileMedicalPatient = async (req, res) => {
   }
 };
 
+//MISE A JOUR DU PATIENT
 const updatePatient = async (req, res) => {
   try {
     const { cardId, ...updateData } = req.body;
@@ -289,8 +252,8 @@ const updatePatient = async (req, res) => {
 
 module.exports = {
   authenticateMedecin,
-  getProfile,
-  getProfileMedicalPatient,
+  getMedecin,
+  getPatient,
   updatePatient,
-  editProfile,
+  editProfileMedecin,
 };

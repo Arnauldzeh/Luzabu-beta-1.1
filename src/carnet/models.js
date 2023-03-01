@@ -5,13 +5,6 @@ const Schema = mongoose.Schema;
 
 //Profile medical
 const ProfilMedicalSchema = new Schema({
-  patientObjId: {
-    type: String,
-  },
-
-  patientCardId: {
-    type: String,
-  },
   age: {
     type: String,
     default: "N/A",
@@ -69,9 +62,6 @@ const ProfilMedicalSchema = new Schema({
 
 // Consultations
 const ConsultationSchema = new Schema({
-  patientCardId: {
-    type: String,
-  },
   doctorMatricule: {
     type: String,
   },
