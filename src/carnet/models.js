@@ -5,13 +5,6 @@ const Schema = mongoose.Schema;
 
 //Profile medical
 const ProfilMedicalSchema = new Schema({
-  patientObjId: {
-    type: String,
-  },
-
-  patientCardId: {
-    type: String,
-  },
   age: {
     type: String,
     default: "N/A",
@@ -69,9 +62,6 @@ const ProfilMedicalSchema = new Schema({
 
 // Consultations
 const ConsultationSchema = new Schema({
-  patientCardId: {
-    type: String,
-  },
   doctorMatricule: {
     type: String,
   },
@@ -82,7 +72,9 @@ const ConsultationSchema = new Schema({
     type: String,
   },
   date: {
-    type: String,
+    type: Date,
+    required: true,
+    default: Date.now,
   },
   age: {
     type: String,
@@ -274,7 +266,6 @@ const RadiologieSchema = new Schema({
     type: String,
   },
 });
-
 //Notification
 const NotificationSchema = new Schema({
   doctorMatricule: {
@@ -293,13 +284,14 @@ const NotificationSchema = new Schema({
     type: String,
   },
 });
-const ProfilMedical = mongoose.model("Profile Medicals", ProfilMedicalSchema);
-const Consultation = mongoose.model("Consultations", ConsultationSchema);
-const Examen = mongoose.model("Examens", ExamenSchema);
-const Ordonnance = mongoose.model("Ordonnances", OrdonnanceSchema);
-const ResultatsLabo = mongoose.model("ResultatsLabos", ResultatsLaboSchema);
-const Radiologie = mongoose.model("Radiologies", RadiologieSchema);
-const Notification = mongoose.model("Notifications", NotificationSchema);
+
+const ProfilMedical = ProfilMedicalSchema;
+const Consultation = ConsultationSchema;
+const Examen = ExamenSchema;
+const Ordonnance = OrdonnanceSchema;
+const ResultatsLabo = ResultatsLaboSchema;
+const Radiologie = RadiologieSchema;
+const Notification = NotificationSchema;
 
 module.exports = {
   ProfilMedical,

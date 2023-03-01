@@ -1,43 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const {
-  createNewPatient,
-  authenticatePatient,
-  getProfile,
-  editProfile,
-  getProfileMedical,
-  createMedicalProfile,
-  editMedicalProfile,
-  getConsultation,
-  getOneConsultation,
-} = require("./controller");
-
+const { signup, signin, getPatient, updatePatient } = require("./controller");
 const { verifyToken } = require("../middleware/auth");
+const { patientUpload } = require("../middleware/multer");
 
-//Signup route
-router.post("/signup", createNewPatient);
+router.post("/signup", signup); //bon👍🏿
 
-//Signin
-router.post("/signin", authenticatePatient);
+router.post("/signin", signin); //bon👍🏿
 
-//Signup route
-router.post("/newmedicalProfile", verifyToken, createMedicalProfile);
+router.get("/getProfile", verifyToken, getPatient); //bon👍🏿
 
-//Consulter profile
-router.get("/profile", verifyToken, getProfile);
+router.post("/newMedicalProfile", verifyToken, updatePatient);
 
-//Consulter profile Medical
-router.get("/getprofileMedical", verifyToken, getProfileMedical);
+router.post("/editProfile", verifyToken, updatePatient);
 
-//Afficher toutes les consultations
-router.get("/getConsultation", verifyToken, getConsultation);
+router.post("/editMedicalProfile", verifyToken, updatePatient);
 
-//Afficher Une consultation
-router.get("/getOneConsultation/:id", verifyToken, getOneConsultation);
+router.get("/getProfileMedical", verifyToken, getPatient);
 
-// //Mettre à jour son profile
-router.post("/editProfile", verifyToken, editProfile);
-// //Mettre à jour son profile
-router.post("/editMedicalProfile", verifyToken, editMedicalProfile);
+router.get("/getConsultation", verifyToken, getPatient);
+
+router.get("/getOneConsultation", verifyToken, getPatient);
 
 module.exports = router;

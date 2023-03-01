@@ -9,6 +9,7 @@ const {
   unblockMatricule,
   unblockcardId,
 } = require("./controller");
+const { doctorUpload } = require("../middleware/multer");
 
 //Ajouter une nouvelle carte de santé
 router.post("/NewcardId", NewcardId);
@@ -18,7 +19,7 @@ router.post("/blockcardId", bloquecardId);
 router.post("/unblockcardId", unblockcardId);
 
 //Ajouter un nouveau medecin dans le systeme
-router.post("/newDoctor", NouveauMedecin);
+router.post("/newDoctor", doctorUpload, NouveauMedecin);
 //Ajouter un nouveau matricule medecin
 router.post("/matricule", newMatricule);
 //

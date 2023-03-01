@@ -1,4 +1,13 @@
 const mongoose = require("mongoose");
+const {
+  ProfilMedical,
+  Consultation,
+  Examen,
+  Ordonnance,
+  ResultatsLabo,
+  Radiologie,
+  Notification,
+} = require("../carnet/models");
 const Schema = mongoose.Schema;
 
 const PatientSchema = new Schema({
@@ -19,7 +28,6 @@ const PatientSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    // match:r,
   },
   birthdate: {
     type: Date,
@@ -53,6 +61,34 @@ const PatientSchema = new Schema({
   password: {
     type: String,
     required: true,
+  },
+  medicalProfile: {
+    type: [ProfilMedical.schema],
+    default: [],
+  },
+  consultations: {
+    type: [Consultation.schema],
+    default: [],
+  },
+  ordonnances: {
+    type: [Ordonnance.schema],
+    default: [],
+  },
+  examensGeneraux: {
+    type: [Examen.schema],
+    default: [],
+  },
+  examensLaboratoire: {
+    type: [ResultatsLabo.schema],
+    default: [],
+  },
+  radiologies: {
+    type: [Radiologie.schema],
+    default: [],
+  },
+  notification: {
+    type: [Notification.schema],
+    default: [],
   },
 });
 
