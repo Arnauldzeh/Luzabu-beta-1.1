@@ -1,12 +1,10 @@
 const { Patient } = require("./model");
-const { ProfilMedical, Consultation } = require("../carnet/models");
 const { Identifiant, bloquer } = require("../admin/models");
 const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
 const jwt = require("jsonwebtoken");
 
-//Create neww patient
-const createNewPatient = async (req, res, next) => {
+const signup = async (req, res, next) => {
   try {
     let {
       cardId,
@@ -116,7 +114,7 @@ const createNewPatient = async (req, res, next) => {
 };
 
 //signin
-const authenticatePatient = async (req, res) => {
+const signin = async (req, res) => {
   try {
     const { cardId, password } = req.body;
     const fetchedPatient = await Patient.findOne({ cardId });
@@ -151,437 +149,93 @@ const authenticatePatient = async (req, res) => {
   }
 };
 
-//Afficher profile
-const getProfile = async (req, res) => {
+// RECUPERER L'OBJET PATIENT
+const getPatient = async (req, res) => {
   try {
-    // const token = req.headers.authorization.split(" ")[1];
     const token =
-      req.body.token || req.query.token || req.headers["authorization"];
+      req.body.token || req.query.token || req.headers["x-access-token"];
+
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
-    // const patient = await Patient.findById({ _id: decodedToken.patientId });
     const patient = await Patient.findOne({ cardId: decodedToken.cardId });
+    const isBlockedCardId = await bloquer.findOne({
+      cardId: decodedToken.cardId,
+    });
 
     if (!patient) {
-      return res.status(404).send("No user found!!");
+      console.log("Returning error: No Patient found!!");
+      return res.status(404).json({ error: "No Patient found!!" });
+    } else if (isBlockedCardId) {
+      console.log("Returning error: This account has been suspended!!");
+      return res
+        .status(400)
+        .json({ error: "This account has been suspended!!" });
+    } else {
+      return res.status(200).json({ patient });
     }
-    return res.status(200).json({
-      cardId: patient.cardId,
-      firstName: patient.firstName,
-      lastName: patient.lastName,
-      birthdate: patient.birthdate,
-      sex: patient.sex,
-      profession: patient.profession,
-      nationality: patient.nationality,
-      address: patient.address,
-      phoneNumber: patient.phoneNumber,
-      profilePicture: patient.profilePicture,
-    });
-  } catch (error) {
-    return res.status(401).send("Invalid token provided");
-  }
-};
-
-//
-const getProfileMedical = async (req, res) => {
-  try {
-    // const token = req.headers.authorization.split(" ")[1];
-    const token =
-      req.body.token || req.query.token || req.headers["authorization"];
-    if (!token) {
-      console.log("Returning error: Authentication token is required!!");
-      return res.status(401).send("Authentication token is required!!");
-    }
-    const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
-    const profileMedical = await ProfilMedical.findOne({
-      patient: decodedToken.cardId,
-    });
-    if (!profileMedical) {
-      console.log("Returning error: No profile medical found!!");
-      return res.status(404).send("No profile medical found!!");
-    }
-    const patient = await Patient.findOne({ cardId: profileMedical.patient });
-    if (!patient) {
-      console.log("Returning error: No patient found!!");
-      return res.status(404).send("No patient found!!");
-    }
-    return res.status(200).json({
-      cardId: patient.cardId,
-      firstName: patient.firstName,
-      lastName: patient.lastName,
-      birthdate: patient.birthdate,
-      sex: patient.sex,
-      phoneNumber: patient.phoneNumber,
-      profilePicture: patient.profilePicture,
-      profession: patient.profession,
-      nationality: patient.nationality,
-      address: patient.address,
-      age: profileMedical.age,
-      height: profileMedical.height,
-      weight: profileMedical.weight,
-      bloodGroup: profileMedical.bloodGroup,
-      allergies: profileMedical.allergies,
-      chronicIllnesses: profileMedical.chronicIllnesses,
-      familyHistories: profileMedical.familyHistories,
-      emergencyContacts: profileMedical.emergencyContacts,
-    });
   } catch (error) {
     console.error("Caught error:", error);
-    return res.status(401).send("Invalid token provided");
+    return res.status(401).send({ error: "An error occured" });
   }
 };
 
-//Mettre à jour le profile patient
-const editProfile = async (req, res) => {
+const updatePatient = async (req, res) => {
   try {
-    // const token = req.headers.authorization.split(" ")[1];
+    const { ...updateData } = req.body;
+
     const token =
-      req.body.token || req.query.token || req.headers["authorization"];
+      req.body.token ||
+      req.query.token ||
+      req.headers["x-access-token"] ||
+      req.headers["authorisation"];
+
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
+
     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
-    // const patient = await Patient.findById({ _id: decodedToken.patientId });
-    const patient = await Patient.findOne({ cardId: decodedToken.cardId });
+    const patient = await Patient.findOne({
+      cardId: decodedToken.cardId,
+    });
+    const isBlockedCardId = await bloquer.findOne({
+      cardId: decodedToken.cardId,
+    });
 
     if (!patient) {
-      return res.status(404).json({ error: "User not found!!" });
-    }
-
-    const {
-      firstName,
-      lastName,
-      birthdate,
-      sex,
-      profession,
-      nationality,
-      address,
-      phoneNumber,
-      profilePicture,
-      password,
-    } = req.body;
-
-    if (firstName) {
-      patient.firstName = firstName;
-    }
-    if (lastName) {
-      patient.lastName = lastName;
-    }
-    if (birthdate) {
-      patient.birthdate = birthdate;
-    }
-    if (password) {
-      patient.password = await cryptage(password);
-    }
-    if (sex) {
-      patient.sex = sex;
-    }
-    if (profession) {
-      patient.profession = profession;
-    }
-    if (nationality) {
-      patient.nationality = nationality;
-    }
-    if (address) {
-      patient.address = address;
-    }
-    if (phoneNumber) {
-      patient.phoneNumber = phoneNumber;
-    }
-
-    if (profilePicture) {
-      patient.profilePicture = profilePicture;
-    }
-
-    const updatedPatient = await patient.save();
-    console.error({ message: " Profil updated successfully" });
-    return res.status(200).json("Profil updated successfully");
-  } catch (error) {
-    console.error("Caught error:", error);
-    return res.status(404).json("Invalid token");
-  }
-};
-
-const createMedicalProfile = async (req, res) => {
-  const token =
-    req.body.token || req.query.token || req.headers["authorization"];
-  if (!token) {
-    return res.status(401).send("Authentication token is required!!");
-  }
-  const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
-  const patient = await Patient.findOne({ cardId: decodedToken.cardId });
-  if (!patient) {
-    return res.status(404).json({ error: "User not found!!" });
-  }
-
-  const existingProfile = await ProfilMedical.findOne({
-    patientCardId: decodedToken.cardId,
-  });
-  if (existingProfile) {
-    return res
-      .status(409)
-      .json({ error: "Medical profile already exists for the patient!!" });
-  } else {
-    // Créer un objet vide pour le profil médical
-    let profile = new ProfilMedical({
-      patientObjId: patient._id,
-      patientCardId: patient.cardId,
-    });
-    let {
-      age,
-      weight,
-      height,
-      bloodGroup,
-      allergies,
-      chronicIllnesses,
-      familyHistories,
-      emergencyContacts,
-    } = req.body;
-    // Ajouter les champs facultatifs s'ils sont présents dans la requête
-    if (age) {
-      profile.age = age;
-    }
-    if (weight) {
-      profile.weight = weight;
-    }
-    if (height) {
-      profile.height = height;
-    }
-    if (bloodGroup) {
-      profile.bloodGroup = bloodGroup;
-    }
-    if (allergies) {
-      profile.allergies = allergies;
-    }
-    if (chronicIllnesses) {
-      profile.chronicIllnesses = chronicIllnesses;
-    }
-    if (familyHistories) {
-      profile.familyHistories = familyHistories;
-    }
-    if (emergencyContacts) {
-      profile.emergencyContacts = emergencyContacts;
-    }
-    try {
-      const savedProfile = await profile.save();
-      console.log("Medical profile created successfully");
-      res.status(201).json({ message: "Medical profile created successfully" });
-    } catch (error) {
-      console.error("Caught error:", error);
-      res.status(500).json({ error: error.message });
-    }
-    // Ajout de la réponse pour le cas où le profil médical existe déjà
-    return res
-      .status(409)
-      .json({ error: "Medical profile already exists for the patient!!" });
-  }
-};
-
-//modifier medical profile
-const editMedicalProfile = async (req, res) => {
-  const token =
-    req.body.token || req.query.token || req.headers["authorization"];
-  if (!token) {
-    return res.status(401).send("Authentication token is required!!");
-  }
-  const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
-  const patient = await Patient.findOne({ cardId: decodedToken.cardId });
-  if (!patient) {
-    return res.status(404).json({ error: "User not found!!" });
-  }
-
-  const profileMedical = await ProfilMedical.findOne({
-    patient: patient.cardId,
-  });
-  if (!profileMedical) {
-    return res.status(404).json({ error: "Medical profile not found!!" });
-  }
-
-  const {
-    age,
-    height,
-    weight,
-    bloodGroup,
-    chronicIllnesses,
-    familyHistories,
-    allergies,
-    emergencyContacts,
-  } = req.body;
-
-  if (!age && !height && !weight && !bloodGroup) {
-    return res.status(400).json({ error: "Fields are required!!" });
-  }
-
-  if (age !== undefined) {
-    profileMedical.age = age;
-  }
-
-  if (height !== undefined) {
-    profileMedical.height = height;
-  }
-
-  if (weight !== undefined) {
-    profileMedical.weight = weight;
-  }
-
-  if (bloodGroup !== undefined) {
-    profileMedical.bloodGroup = bloodGroup;
-  }
-
-  if (chronicIllnesses !== undefined) {
-    if (!Array.isArray(chronicIllnesses)) {
+      console.log("Returning error: No Patient found!!");
+      return res.status(404).json({ error: "No Patient found!!" });
+    } else if (isBlockedCardId) {
+      console.log("Returning error: This account has been suspended!!");
       return res
         .status(400)
-        .json({ error: "Invalid input for chronicIllnesses array!!" });
-    }
-    profileMedical.chronicIllnesses = chronicIllnesses;
-  }
-
-  if (familyHistories !== undefined) {
-    if (!Array.isArray(familyHistories)) {
-      return res
-        .status(400)
-        .json({ error: "Invalid input for familyHistories array!!" });
-    }
-    profileMedical.familyHistories = familyHistories;
-  }
-
-  if (allergies !== undefined) {
-    if (!Array.isArray(allergies)) {
-      return res
-        .status(400)
-        .json({ error: "Invalid input for allergies array!!" });
-    }
-    allergies.forEach((allergy) => {
-      const { id, field, value } = allergy;
-      const allergyIndex = profileMedical.allergies.findIndex(
-        (allergy) => allergy._id.toString() === id
+        .json({ error: "This account has been suspended!!" });
+    } else {
+      const updatedPatient = await Patient.findOneAndUpdate(
+        { cardId: decodedToken.cardId },
+        {
+          $set: updateData,
+        },
+        { new: true }
       );
-      if (allergyIndex >= 0) {
-        profileMedical.allergies[allergyIndex][field] = value;
-      } else {
-        return res.status(400).json({
-          error: "Invalid object ID provided for allergies array!!",
-        });
-      }
-    });
-  }
-
-  if (emergencyContacts !== undefined) {
-    if (!Array.isArray(emergencyContacts)) {
-      return res
-        .status(400)
-        .json({ error: "Invalid input for emergencyContacts array!!" });
+      return res.status(200).json({
+        message: "Patient updated successfully",
+        NewPatient: updatedPatient,
+      });
     }
-    emergencyContacts.forEach((contact) => {
-      const { id, field, value } = contact;
-      const contactIndex = profileMedical.emergencyContacts.findIndex(
-        (contact) => contact._id.toString() === id
-      );
-      if (contactIndex >= 0) {
-        profileMedical.emergencyContacts[contactIndex][field] = value;
-      } else {
-        return res.status(400).json({
-          error: "Invalid object ID provided for emergencyContacts array!!",
-        });
-      }
-    });
-  }
-
-  try {
-    const savedProfile = await profileMedical.save();
-    return res.status(200).json(savedProfile);
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
-};
-
-//Afficher toutes les consultations
-const getConsultation = async (req, res) => {
-  try {
-    const token =
-      req.body.token || req.query.token || req.headers["authorization"];
-    if (!token) {
-      return res.status(401).send("Authentication token is required!!");
-    }
-    const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
-    const patient = await Patient.findOne({ cardId: decodedToken.cardId });
-
-    if (!patient) {
-      return res.status(404).send("No user found!!");
-    }
-
-    const consultations = await Consultation.find({
-      patientCardId: decodedToken.cardId,
-    }); // Ajout de .toArray() pour obtenir un tableau de consultations
-
-    if (!consultations) {
-      return res.status(404).send("No consultation found!!");
-    }
-
-    const consultationsData = consultations.map((consultation) => ({
-      // id: consultation._id,
-      // time: consultation.time,
-      // date: consultation.date,
-      // doctorName: consultation.doctorName,
-      consultation,
-    }));
-
-    return res.status(200).json(consultationsData);
   } catch (error) {
-    console.error("Caught error:", error);
-    return res.status(401).send("An error occured, try again");
-  }
-};
-
-//afficher une consultation specifique
-//Afficher les informations d'une consultation
-const getOneConsultation = async (req, res) => {
-  try {
-    const token =
-      req.body.token || req.query.token || req.headers["authorization"];
-    if (!token) {
-      return res.status(401).send("Authentication token is required!!");
-    }
-    const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
-    const patient = await Patient.findOne({ cardId: decodedToken.cardId });
-    if (!patient) {
-      return res.status(404).send("No user found!!");
-    }
-
-    const consultationId = req.params.id; // Récupération de l'id de la consultation à afficher
-    //const consultationId = req.params["id"];
-
-    const consultation = await Consultation.findOne({
-      _id: consultationId,
-      patientCardId: decodedToken.cardId,
-    });
-
-    if (!consultation) {
-      console.log("Returning error: No consultation found!!");
-      return res.status(404).send("No consultation found!!");
-    }
-
-    return res.status(200).json({
-      consultation,
-    });
-  } catch (error) {
-    console.error("Caught error:", error);
-    return res.status(401).send("Invalid token provided");
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error });
   }
 };
 
 //Exporter les fonctions
 module.exports = {
-  createNewPatient,
-  authenticatePatient,
-  getProfile,
-  editProfile,
-  getProfileMedical,
-  createMedicalProfile,
-  editMedicalProfile,
-  getConsultation,
-  getOneConsultation,
+  signup,
+  signin,
+  getPatient,
+  updatePatient,
 };

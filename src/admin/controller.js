@@ -1,15 +1,6 @@
 const { Identifiant, bloquer, Matricule, bloquerMedecin } = require("./models");
-const {
-  validatecardId,
-  validateMatricule,
-  validatebloquecardId,
-  validatebloquematricule,
-  validateMedecin,
-} = require("../middleware/dataValidation");
 const { Medecin } = require("../medecin/model");
-const { cryptage, verifyHashedData } = require("../services/cryptage");
-const { createToken } = require("../services/creerToken");
-const jwt = require("jsonwebtoken");
+const { cryptage } = require("../services/cryptage");
 
 //Create neww patient
 const NewcardId = async (req, res) => {
@@ -25,11 +16,7 @@ const NewcardId = async (req, res) => {
 
       if (existingcardId) {
         console.log("Returning error: Card already used!!");
-
-        return res
-          .status(404)
-          .json({ error: "cardId already exist" })
-          .then(console.log(`Status code: ${res.status}`));
+        return res.status(404).json({ error: "cardId already exist" });
       }
       const newcardId = new Identifiant({
         cardId,
@@ -50,8 +37,6 @@ const newMatricule = async (req, res) => {
     if (!matricule) {
       return res.status(400).json({ error: "Empty input fields!!!" });
     } else {
-      //checking if CardId belongs to the system
-      //checking if patient already exists
       const existingMatricule = await Matricule.findOne({ matricule });
 
       if (existingMatricule) {
