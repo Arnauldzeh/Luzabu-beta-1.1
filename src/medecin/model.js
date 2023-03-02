@@ -68,6 +68,10 @@ const medecinSchema = new Schema({
     type: String,
     required: true,
   },
+  registrationDate: {
+    type: Date,
+    required: true,
+  },
 });
 
 const Medecin = mongoose.model("Medecins", medecinSchema);

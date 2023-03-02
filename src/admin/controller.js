@@ -179,6 +179,7 @@ const NouveauMedecin = async (req, res, next) => {
       hopitalName,
       profilePicture,
       password,
+      registrationDate,
     } = req.body;
 
     //removing blank spaces
@@ -193,6 +194,7 @@ const NouveauMedecin = async (req, res, next) => {
     city = city.trim();
     qualification = qualification.trim();
     hopitalName = hopitalName.trim();
+    registrationDate = registrationDate.trim();
 
     //testing empty fields
     if (
@@ -211,7 +213,8 @@ const NouveauMedecin = async (req, res, next) => {
         city &&
         hopitalName &&
         profilePicture &&
-        password
+        password &&
+        registrationDate
       )
     ) {
       return res.status(400).json({ error: "Empty input fields!!!" });
@@ -259,6 +262,7 @@ const NouveauMedecin = async (req, res, next) => {
         hopitalName,
         profilePicture,
         password: hashedPassword,
+        registrationDate,
       });
       const addedDoctor = await newMedecin.save();
       return res
