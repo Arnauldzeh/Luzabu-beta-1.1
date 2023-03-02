@@ -17,8 +17,7 @@ const PatientSchema = new Schema({
     required: true,
     unique: true,
   },
-
-  PersonalInfos: {
+  userProfile: {
     type: PersonalInfos,
     required: true,
   },
@@ -30,15 +29,16 @@ const PatientSchema = new Schema({
     type: [Consultation.schema],
     default: [],
   },
-  ordonnances: {
+
+  prescriptions: {
     type: [Ordonnance.schema],
     default: [],
   },
-  examensGeneraux: {
+  examinations: {
     type: [Examen.schema],
     default: [],
   },
-  examensLaboratoire: {
+  labResults: {
     type: [ResultatsLabo.schema],
     default: [],
   },
@@ -46,7 +46,7 @@ const PatientSchema = new Schema({
     type: [Radiologie.schema],
     default: [],
   },
-  notification: {
+  notifications: {
     type: [Notification.schema],
     default: [],
   },

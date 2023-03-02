@@ -71,7 +71,7 @@ const signup = async (req, res, next) => {
       const existingNewId = await Identifiant.findOne({ cardId });
       const existingPatient = await Patient.findOne({ cardId });
       const existingEmail = await Patient.findOne({
-        "PersonalInfos.email": email,
+        "userProfile.email": email,
       });
 
       if (!existingNewId) {
@@ -89,7 +89,7 @@ const signup = async (req, res, next) => {
       const hashedPassword = await cryptage(password);
       const newPatient = new Patient({
         cardId,
-        PersonalInfos: {
+        userProfile: {
           firstName,
           lastName,
           email,
@@ -131,7 +131,7 @@ const signin = async (req, res) => {
     } else if (!fetchedPatient) {
       return res.status(400).json({ message: "Invalid credentials" });
     } else {
-      const hashedPassword = fetchedPatient.PersonalInfos.password;
+      const hashedPassword = fetchedPatient.userProfile.password;
       const passwordMatch = await verifyHashedData(password, hashedPassword);
       if (!passwordMatch) {
         return res.status(400).json({ message: "Invalid password" });
@@ -221,27 +221,27 @@ const updatePatient = async (req, res) => {
         { cardId: decodedToken.cardId },
         {
           $set: {
-            "PersonalInfos.firstName": updateData.PersonalInfos.firstName,
-            "PersonalInfos.lastName": updateData.PersonalInfos.lastName,
-            "PersonalInfos.email": updateData.PersonalInfos.email,
-            "PersonalInfos.birthdate": updateData.PersonalInfos.birthdate,
-            "PersonalInfos.sex": updateData.PersonalInfos.sex,
-            "PersonalInfos.profession": updateData.PersonalInfos.profession,
-            "PersonalInfos.nationality": updateData.PersonalInfos.nationality,
-            "PersonalInfos.address": updateData.PersonalInfos.address,
-            "PersonalInfos.phoneNumber": updateData.PersonalInfos.phoneNumber,
-            "PersonalInfos.profilePicture":
-              updateData.PersonalInfos.profilePicture,
-            "PersonalInfos.password": updateData.PersonalInfos.password,
+            "userProfile.firstName": updateData.userProfile.firstName,
+            "userProfile.lastName": updateData.userProfile.lastName,
+            "userProfile.email": updateData.userProfile.email,
+            "userProfile.birthdate": updateData.userProfile.birthdate,
+            "userProfile.sex": updateData.userProfile.sex,
+            "userProfile.profession": updateData.userProfile.profession,
+            "userProfile.nationality": updateData.userProfile.nationality,
+            "userProfile.address": updateData.userProfile.address,
+            "userProfile.phoneNumber": updateData.userProfile.phoneNumber,
+            "userProfile.profilePicture": updateData.userProfile.profilePicture,
+            "userProfile.password": updateData.userProfile.password,
           },
+
           $push: {
-            medicalProfile: updateData.consultation,
-            consultations: updateData.examen,
-            ordonnances: updateData.examen,
-            examensGeneraux: updateData.examen,
-            examensLaboratoire: updateData.examen,
-            radiologies: updateData.examen,
-            notification: updateData.examen,
+            medicalProfile: updateData.medicalProfile,
+            consultations: updateData.consultations,
+            prescriptions: updateData.prescriptions,
+            examinations: updateData.examinations,
+            labResults: updateData.labResults,
+            radiologies: updateData.radiologies,
+            notifications: updateData.notifications,
           },
         },
         { new: true }

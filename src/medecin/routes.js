@@ -1,34 +1,23 @@
 const express = require("express");
 const router = express.Router();
 const {
-  authenticateMedecin,
+  signin,
   getMedecin,
   getPatient,
   updatePatient,
-  editProfileMedecin,
+  updateMedecin,
 } = require("./controller");
 
 const { verifyToken } = require("../middleware/auth");
 
-//Signin
-router.post("/signin", authenticateMedecin);
-//Consulter profile
-router.get("/profile", verifyToken, getMedecin);
-//Consulter profile
-router.post("/editProfile", verifyToken, editProfileMedecin);
+router.post("/signin", signin); //bon👍
 
-//Consulter profile Medical
-router.get("/profileMedical", verifyToken, getPatient);
+router.get("/getMedecin", verifyToken, getMedecin); //bon👍
 
-//Enregistrer consultation
-router.post("/newConsultation", verifyToken, updatePatient);
-//Enregistrer Examen
-router.post("/newExamen", verifyToken, updatePatient);
-//Enregistrer Ordonnance
-router.post("/newOrdonnance", verifyToken, updatePatient);
-//Enregistrer ResultatsLabo
-router.post("/newResultatsLabo", verifyToken, updatePatient);
-//Enregistrer Radiologie
-router.post("/newRadiologie", verifyToken, updatePatient);
+router.put("/updateMedecin", verifyToken, updateMedecin); //bon👍
+
+router.get("/getPatient", verifyToken, getPatient); //bon👍
+
+router.put("/updatePatient", verifyToken, updatePatient); //bon👍
 
 module.exports = router;

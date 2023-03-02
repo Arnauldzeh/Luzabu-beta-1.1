@@ -7,8 +7,7 @@ const jwt = require("jsonwebtoken");
 const { Patient } = require("../patient/model");
 const { bloquer } = require("../admin/models");
 
-//signin
-const authenticateMedecin = async (req, res) => {
+const signin = async (req, res) => {
   try {
     let { matricule, password } = req.body;
     const fetchedMedecin = await Medecin.findOne({ matricule });
@@ -69,7 +68,7 @@ const getMedecin = async (req, res) => {
 };
 
 //Mettre à jour le profile Medecin
-const editProfileMedecin = async (req, res) => {
+const updateMedecin = async (req, res) => {
   try {
     //vérification de l'identité du médecin par son matricule entré
     const token =
@@ -251,9 +250,9 @@ const updatePatient = async (req, res) => {
 };
 
 module.exports = {
-  authenticateMedecin,
+  signin,
   getMedecin,
   getPatient,
   updatePatient,
-  editProfileMedecin,
+  updateMedecin,
 };
