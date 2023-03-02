@@ -1,7 +1,55 @@
 const mongoose = require("mongoose");
-const Patient = require("../patient/model");
-
 const Schema = mongoose.Schema;
+
+//Information Personnel
+const PersonalInfosSchema = new Schema({
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  birthdate: {
+    type: Date,
+    required: true,
+  },
+  sex: {
+    type: String,
+    required: true,
+  },
+  profession: {
+    type: String,
+    required: true,
+  },
+  nationality: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  phoneNumber: {
+    type: String,
+    required: true,
+  },
+
+  profilePicture: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+});
 
 //Profile medical
 const ProfilMedicalSchema = new Schema({
@@ -285,6 +333,7 @@ const NotificationSchema = new Schema({
   },
 });
 
+const PersonalInfos = PersonalInfosSchema;
 const ProfilMedical = ProfilMedicalSchema;
 const Consultation = ConsultationSchema;
 const Examen = ExamenSchema;
@@ -294,6 +343,7 @@ const Radiologie = RadiologieSchema;
 const Notification = NotificationSchema;
 
 module.exports = {
+  PersonalInfos,
   ProfilMedical,
   Consultation,
   Examen,

@@ -70,7 +70,9 @@ const signup = async (req, res, next) => {
     } else {
       const existingNewId = await Identifiant.findOne({ cardId });
       const existingPatient = await Patient.findOne({ cardId });
-      const existingEmail = await Patient.findOne({ email });
+      const existingEmail = await Patient.findOne({
+        "PersonalInfos.email": email,
+      });
 
       if (!existingNewId) {
         console.log("Returning error: this card does'nt exist!!!");
@@ -87,17 +89,19 @@ const signup = async (req, res, next) => {
       const hashedPassword = await cryptage(password);
       const newPatient = new Patient({
         cardId,
-        firstName,
-        lastName,
-        email,
-        birthdate,
-        sex,
-        profession,
-        nationality,
-        address,
-        phoneNumber,
-        profilePicture,
-        password: hashedPassword,
+        PersonalInfos: {
+          firstName,
+          lastName,
+          email,
+          birthdate,
+          sex,
+          profession,
+          nationality,
+          address,
+          phoneNumber,
+          profilePicture,
+          password: hashedPassword,
+        },
       });
       await newPatient.save();
 
@@ -127,7 +131,7 @@ const signin = async (req, res) => {
     } else if (!fetchedPatient) {
       return res.status(400).json({ message: "Invalid credentials" });
     } else {
-      const hashedPassword = fetchedPatient.password;
+      const hashedPassword = fetchedPatient.PersonalInfos.password;
       const passwordMatch = await verifyHashedData(password, hashedPassword);
       if (!passwordMatch) {
         return res.status(400).json({ message: "Invalid password" });
@@ -145,6 +149,7 @@ const signin = async (req, res) => {
       });
     }
   } catch (error) {
+    console.error("Caught error:", error);
     return res.status(500).json({ error });
   }
 };
@@ -215,13 +220,36 @@ const updatePatient = async (req, res) => {
       const updatedPatient = await Patient.findOneAndUpdate(
         { cardId: decodedToken.cardId },
         {
-          $set: updateData,
+          $set: {
+            "PersonalInfos.firstName": updateData.PersonalInfos.firstName,
+            "PersonalInfos.lastName": updateData.PersonalInfos.lastName,
+            "PersonalInfos.email": updateData.PersonalInfos.email,
+            "PersonalInfos.birthdate": updateData.PersonalInfos.birthdate,
+            "PersonalInfos.sex": updateData.PersonalInfos.sex,
+            "PersonalInfos.profession": updateData.PersonalInfos.profession,
+            "PersonalInfos.nationality": updateData.PersonalInfos.nationality,
+            "PersonalInfos.address": updateData.PersonalInfos.address,
+            "PersonalInfos.phoneNumber": updateData.PersonalInfos.phoneNumber,
+            "PersonalInfos.profilePicture":
+              updateData.PersonalInfos.profilePicture,
+            "PersonalInfos.password": updateData.PersonalInfos.password,
+          },
+          $push: {
+            medicalProfile: updateData.consultation,
+            consultations: updateData.examen,
+            ordonnances: updateData.examen,
+            examensGeneraux: updateData.examen,
+            examensLaboratoire: updateData.examen,
+            radiologies: updateData.examen,
+            notification: updateData.examen,
+          },
         },
         { new: true }
       );
+
       return res.status(200).json({
         message: "Patient updated successfully",
-        NewPatient: updatedPatient,
+        // NewPatient: updatedPatient,
       });
     }
   } catch (error) {

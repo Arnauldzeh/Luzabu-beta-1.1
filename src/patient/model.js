@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const {
+  PersonalInfos,
   ProfilMedical,
   Consultation,
   Examen,
@@ -16,50 +17,9 @@ const PatientSchema = new Schema({
     required: true,
     unique: true,
   },
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  birthdate: {
-    type: Date,
-    required: true,
-  },
-  sex: {
-    type: String,
-    required: true,
-  },
-  profession: {
-    type: String,
-    required: true,
-  },
-  nationality: {
-    type: String,
-    required: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-  phoneNumber: {
-    type: String,
-    required: true,
-  },
 
-  profilePicture: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
+  PersonalInfos: {
+    type: PersonalInfos,
     required: true,
   },
   medicalProfile: {
