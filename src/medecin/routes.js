@@ -10,6 +10,8 @@ const {
 
 const { verifyToken } = require("../middleware/auth");
 
+router.post("/signup", signup); //bon👍
+
 router.post("/signin", signin); //bon👍
 
 router.get("/getMedecin", verifyToken, getMedecin); //bon👍

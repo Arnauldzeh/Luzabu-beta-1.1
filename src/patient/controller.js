@@ -232,6 +232,12 @@ const updatePatient = async (req, res) => {
             "userProfile.phoneNumber": updateData.userProfile.phoneNumber,
             "userProfile.profilePicture": updateData.userProfile.profilePicture,
             "userProfile.password": updateData.userProfile.password,
+
+            //
+            "medicalProfile.password": updateData.userProfile.password,
+          },
+          $addToSet: {
+            "medicalProfile.allergies": updateData.medicalProfile.allergies, // Ajouter le premier objet du tableau allergies de la requête
           },
 
           $push: {

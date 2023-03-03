@@ -5,13 +5,24 @@ const { Statistics } = require("./model");
 
 async function generateStats() {
   try {
-    const Patients = await Patient.countDocuments();
-    const Doctors = await Medecin.countDocuments();
+    const totalPatients = await Patient.countDocuments();
+    const totalDoctors = await Medecin.countDocuments();
+    // const totalPatientsByNationality = await Patient.aggregate([
+    //   {
+    //     $group: {
+    //       nationality: "$userProfile.nationality",
+    //       count: { $sum: 1 },
+    //     },
+    //   },
+    //   {
+    //     $sort: { count: -1 },
+    //   },
+    // ]);
     // const totalConsultations = await Patient.consultations.countDocuments();
 
     const updatedStats = await Statistics.findOneAndUpdate(
       {},
-      { Patients, Doctors },
+      { totalPatients, totalDoctors },
       { upsert: true, new: true }
     );
 

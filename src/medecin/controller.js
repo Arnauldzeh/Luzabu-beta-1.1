@@ -7,6 +7,118 @@ const jwt = require("jsonwebtoken");
 const { Patient } = require("../patient/model");
 const { bloquer } = require("../admin/models");
 
+//Create neww Doctor
+const signup = async (req, res, next) => {
+  try {
+    let {
+      matricule,
+      firstName,
+      lastName,
+      email,
+      birthdate,
+      birthPlace,
+      sex,
+      nationality,
+      phoneNumber,
+      city,
+      qualification,
+      certificate,
+      hopitalName,
+      profilePicture,
+      password,
+      registrationDate,
+    } = req.body;
+
+    //removing blank spaces
+    matricule = matricule.trim();
+    firstName = firstName.trim();
+    lastName = lastName.trim();
+    email = email.trim();
+    birthPlace = birthPlace.trim();
+    sex = sex.trim();
+    nationality = nationality.trim();
+    phoneNumber = phoneNumber.trim();
+    city = city.trim();
+    qualification = qualification.trim();
+    hopitalName = hopitalName.trim();
+    registrationDate = registrationDate.trim();
+
+    //testing empty fields
+    if (
+      !(
+        matricule &&
+        firstName &&
+        lastName &&
+        email &&
+        birthdate &&
+        birthPlace &&
+        sex &&
+        nationality &&
+        phoneNumber &&
+        qualification &&
+        certificate &&
+        city &&
+        hopitalName &&
+        profilePicture &&
+        password &&
+        registrationDate
+      )
+    ) {
+      return res.status(400).json({ error: "Empty input fields!!!" });
+      // } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
+      //   return res.status(400).json({ error: "Invalid name!!!" });
+      // }
+    } else if (
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+    ) {
+      return res.status(400).json({ error: "Invalid email!!!" });
+    } else if (password.length < 8) {
+      return res
+        .status(400)
+        .json({ error: "Password must contain atleast 8 caracters!!!" });
+    } else {
+      const existingMedecin = await Medecin.findOne({ matricule });
+      const existingEmail = await Medecin.findOne({ email });
+
+      if (existingMedecin) {
+        return res
+          .status(400)
+          .json({ error: "A doctor already used this data" });
+      } else if (existingEmail) {
+        return res.status(400).json({ error: "email already used" });
+      }
+
+      //hash password with the cryptage function in the services folder
+      const hashedPassword = await cryptage(password);
+      const newMedecin = new Medecin({
+        matricule,
+        firstName,
+        lastName,
+        email,
+        birthdate,
+        birthPlace,
+        sex,
+        nationality,
+        phoneNumber,
+        qualification,
+        certificate,
+        city,
+        hopitalName,
+        profilePicture,
+        password: hashedPassword,
+        registrationDate,
+      });
+      const addedDoctor = await newMedecin.save();
+      return res
+        .status(200)
+        .json({ message: "User registered successfully", addedDoctor });
+    }
+  } catch (error) {
+    console.log({ message: error });
+    return res.status(500).json({ error: "An error occured" });
+  }
+};
+
 const signin = async (req, res) => {
   try {
     let { matricule, password } = req.body;
@@ -250,6 +362,7 @@ const updatePatient = async (req, res) => {
 };
 
 module.exports = {
+  signup,
   signin,
   getMedecin,
   getPatient,
