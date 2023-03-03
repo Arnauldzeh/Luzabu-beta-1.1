@@ -93,7 +93,7 @@ const signup = async (req, res, next) => {
           firstName,
           lastName,
           email,
-          birthdate,
+          birthdate, // yyyy/mm/dd
           sex,
           profession,
           nationality,
