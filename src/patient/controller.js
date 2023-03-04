@@ -176,7 +176,7 @@ const getPatient = async (req, res) => {
         .status(400)
         .json({ error: "This account has been suspended!!" });
     } else {
-      return res.status(200).json({ patient });
+      return res.status(200).json( patient );
     }
   } catch (error) {
     console.error("Caught error:", error);
