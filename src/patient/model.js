@@ -22,8 +22,8 @@ const PatientSchema = new Schema({
     required: true,
   },
   medicalProfile: {
-    type: [ProfilMedical.schema],
-    default: [],
+    type: ProfilMedical,
+    default: {},
   },
   consultations: {
     type: [Consultation.schema],

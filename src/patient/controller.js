@@ -221,27 +221,28 @@ const updatePatient = async (req, res) => {
         { cardId: decodedToken.cardId },
         {
           $set: {
-            "userProfile.firstName": updateData.userProfile.firstName,
-            "userProfile.lastName": updateData.userProfile.lastName,
-            "userProfile.email": updateData.userProfile.email,
-            "userProfile.birthdate": updateData.userProfile.birthdate,
-            "userProfile.sex": updateData.userProfile.sex,
-            "userProfile.profession": updateData.userProfile.profession,
-            "userProfile.nationality": updateData.userProfile.nationality,
-            "userProfile.address": updateData.userProfile.address,
-            "userProfile.phoneNumber": updateData.userProfile.phoneNumber,
-            "userProfile.profilePicture": updateData.userProfile.profilePicture,
-            "userProfile.password": updateData.userProfile.password,
-
-            //
-            "medicalProfile.password": updateData.userProfile.password,
-          },
-          $addToSet: {
-            "medicalProfile.allergies": updateData.medicalProfile.allergies, // Ajouter le premier objet du tableau allergies de la requête
+            "userProfile.firstName": updateData.firstName,
+            "userProfile.lastName": updateData.lastName,
+            "userProfile.email": updateData.email,
+            "userProfile.birthdate": updateData.birthdate,
+            "userProfile.sex": updateData.sex,
+            "userProfile.profession": updateData.profession,
+            "userProfile.nationality": updateData.nationality,
+            "userProfile.address": updateData.address,
+            "userProfile.phoneNumber": updateData.phoneNumber,
+            "userProfile.profilePicture": updateData.profilePicture,
+            "userProfile.password": updateData.password,
+            "medicalProfile.age": updateData.age,
+            "medicalProfile.height": updateData.height,
+            "medicalProfile.weight": updateData.weight,
+            "medicalProfile.bloodGroup": updateData.bloodGroup,
           },
 
           $push: {
-            medicalProfile: updateData.medicalProfile,
+            "medicalProfile.allergies": updateData.allergies,
+            "medicalProfile.chronicIllnesses": updateData.chronicIllnesses,
+            "medicalProfile.familyHistories": updateData.familyHistories,
+            "medicalProfile.emergencyContacts": updateData.emergencyContacts,
             consultations: updateData.consultations,
             prescriptions: updateData.prescriptions,
             examinations: updateData.examinations,
