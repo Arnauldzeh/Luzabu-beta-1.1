@@ -158,8 +158,8 @@ const signin = async (req, res) => {
 const getMedecin = async (req, res) => {
   try {
     //vérification de l'identité du médecin par son matricule entré
-    const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
+    const token = req.headers.authorization.split(" ")[1]
+
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -183,8 +183,7 @@ const getMedecin = async (req, res) => {
 const updateMedecin = async (req, res) => {
   try {
     //vérification de l'identité du médecin par son matricule entré
-    const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
+        const token = req.headers.authorization.split(" ")[1]
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -276,9 +275,7 @@ const getPatient = async (req, res) => {
     const patient = await Patient.findOne({ cardId });
     const isBlockedCardId = await bloquer.findOne({ cardId });
 
-    const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
-
+       const token = req.headers.authorization.split(" ")[1]
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -316,9 +313,7 @@ const updatePatient = async (req, res) => {
     const fetchedPatient = await Patient.findOne({ cardId });
     const isBlockedCardId = await bloquer.findOne({ cardId });
 
-    const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
-
+       const token = req.headers.authorization.split(" ")[1]
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
