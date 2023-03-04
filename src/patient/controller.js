@@ -158,7 +158,7 @@ const signin = async (req, res) => {
 const getPatient = async (req, res) => {
   try {
     const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
+      req.body.token || req.query.token || req.headers["x-access-token"]|| req.headers["authorization"];
 
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
