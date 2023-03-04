@@ -3,12 +3,7 @@ const { TOKEN_KEY } = process.env;
 
 //verifier le token
 const verifyToken = async (req, res, next) => {
-  const token =
-    req.headers.authorization.split(" ")[1] ||
-    req.headers["x-access-token"] ||
-    req.headers["authorisation"] ||
-    req.body.token ||
-    req.query.token;
+  const token = req.headers.authorization.split(" ")[1];
 
   if (!token) {
     return res.status(403).send("An authentication token is required");

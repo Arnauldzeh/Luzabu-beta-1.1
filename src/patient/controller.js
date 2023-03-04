@@ -157,12 +157,7 @@ const signin = async (req, res) => {
 // RECUPERER L'OBJET PATIENT
 const getPatient = async (req, res) => {
   try {
-    const token =
-      req.headers.authorization.split(" ")[1] ||
-      req.headers["x-access-token"] ||
-      req.headers["authorisation"] ||
-      req.body.token ||
-      req.query.token;
+    const token = req.headers.authorization.split(" ")[1];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -193,12 +188,7 @@ const updatePatient = async (req, res) => {
   try {
     const { ...updateData } = req.body;
 
-    const token =
-      req.headers.authorization.split(" ")[1] ||
-      req.headers["x-access-token"] ||
-      req.headers["authorisation"] ||
-      req.body.token ||
-      req.query.token;
+    const token = req.headers.authorization.split(" ")[1];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
