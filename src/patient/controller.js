@@ -183,10 +183,10 @@ const getPatient = async (req, res) => {
     return res.status(401).send({ error: "An error occured" });
   }
 };
-
+// MISE A JOUR DE L'OBJET PATIENT
 const updatePatient = async (req, res) => {
   try {
-    const { ...updateData } = req.body;
+    const { patient } = req.body;
 
     const token = req.headers.authorization.split(" ")[1];
     if (!token) {
@@ -194,14 +194,15 @@ const updatePatient = async (req, res) => {
     }
 
     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
-    const patient = await Patient.findOne({
+    const fetchpatient = await Patient.findOne({
       cardId: decodedToken.cardId,
     });
+    // console.log(decodedToken.cardId);
     const isBlockedCardId = await bloquer.findOne({
       cardId: decodedToken.cardId,
     });
 
-    if (!patient) {
+    if (!fetchpatient) {
       console.log("Returning error: No Patient found!!");
       return res.status(404).json({ error: "No Patient found!!" });
     } else if (isBlockedCardId) {
@@ -209,49 +210,20 @@ const updatePatient = async (req, res) => {
       return res
         .status(400)
         .json({ error: "This account has been suspended!!" });
-    } else {
-      const updatedPatient = await Patient.findOneAndUpdate(
-        { cardId: decodedToken.cardId },
-        {
-          $set: {
-            "userProfile.firstName": updateData.firstName,
-            "userProfile.lastName": updateData.lastName,
-            "userProfile.email": updateData.email,
-            "userProfile.birthdate": updateData.birthdate,
-            "userProfile.sex": updateData.sex,
-            "userProfile.profession": updateData.profession,
-            "userProfile.nationality": updateData.nationality,
-            "userProfile.address": updateData.address,
-            "userProfile.phoneNumber": updateData.phoneNumber,
-            "userProfile.profilePicture": updateData.profilePicture,
-            "userProfile.password": updateData.password,
-            "medicalProfile.age": updateData.age,
-            "medicalProfile.height": updateData.height,
-            "medicalProfile.weight": updateData.weight,
-            "medicalProfile.bloodGroup": updateData.bloodGroup,
-          },
-
-          $push: {
-            "medicalProfile.allergies": updateData.allergies,
-            "medicalProfile.chronicIllnesses": updateData.chronicIllnesses,
-            "medicalProfile.familyHistories": updateData.familyHistories,
-            "medicalProfile.emergencyContacts": updateData.emergencyContacts,
-            consultations: updateData.consultations,
-            prescriptions: updateData.prescriptions,
-            examinations: updateData.examinations,
-            labResults: updateData.labResults,
-            radiologies: updateData.radiologies,
-            notifications: updateData.notifications,
-          },
-        },
-        { new: true }
-      );
-
-      return res.status(200).json({
-        message: "Patient updated successfully",
-        // NewPatient: updatedPatient,
-      });
+    } else if (!patient) {
+      return res.status(400).json({ error: "Invalid update data" });
     }
+
+    const updatedPatient = await Patient.findOneAndUpdate(
+      { cardId: decodedToken.cardId },
+      { $set: { ...patient } },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      message: "Patient updated successfully",
+      patient: updatedPatient,
+    });
   } catch (error) {
     console.error(error);
     return res
