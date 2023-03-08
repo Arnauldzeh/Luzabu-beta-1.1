@@ -306,10 +306,58 @@ const getPatient = async (req, res) => {
   }
 };
 
+// const updatePatient = async (req, res) => {
+//   try {
+//     const patient = req.body;
+
+//     const token = req.headers.authorization.split(" ")[1];
+//     if (!token) {
+//       return res.status(401).send("Authentication token is required!!");
+//     }
+
+//     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
+//     const fetchpatient = await Patient.findOne({
+//       cardId: decodedToken.cardId,
+//     });
+//     // console.log(decodedToken.cardId);
+//     const isBlockedCardId = await bloquer.findOne({
+//       cardId: decodedToken.cardId,
+//     });
+
+//     if (!fetchpatient) {
+//       console.log("Returning error: No Patient found!!");
+//       return res.status(404).json({ error: "No Patient found!!" });
+//     } else if (isBlockedCardId) {
+//       console.log("Returning error: This account has been suspended!!");
+//       return res
+//         .status(400)
+//         .json({ error: "This account has been suspended!!" });
+//     } else if (!patient) {
+//       return res.status(400).json({ error: "Invalid update data" });
+//     }
+
+//     const updatedPatient = await Patient.findOneAndUpdate(
+//       { cardId: decodedToken.cardId },
+//       { $set: patient },
+//       { new: true }
+//     );
+
+//     return res.status(200).json({
+//       message: "Patient updated successfully",
+//       patient: updatedPatient,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(500)
+//       .json({ message: "Internal server error", error: error });
+//   }
+// };
+
 //MISE A JOUR DU PATIENT
 const updatePatient = async (req, res) => {
   try {
-    const { cardId, ...updateData } = req.body;
+    const { cardId, patient } = req.body;
     const fetchedPatient = await Patient.findOne({ cardId });
     const isBlockedCardId = await bloquer.findOne({ cardId });
 
@@ -339,7 +387,7 @@ const updatePatient = async (req, res) => {
       } else {
         const updatedPatient = await Patient.findOneAndUpdate(
           { cardId },
-          { $push: updateData },
+          { $set: patient },
           { new: true }
         );
         return res.status(200).json({
