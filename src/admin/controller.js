@@ -161,7 +161,7 @@ const unblockcardId = async (req, res) => {
 
 //
 //Create neww Doctor
-const NouveauMedecin = async (req, res, next) => {
+const signupMedecin = async (req, res, next) => {
   try {
     let {
       matricule,
@@ -230,13 +230,10 @@ const NouveauMedecin = async (req, res, next) => {
         .status(400)
         .json({ error: "Password must contain atleast 8 caracters!!!" });
     } else {
-      const existingMatricule = await Matricule.findOne({ matricule });
       const existingMedecin = await Medecin.findOne({ matricule });
       const existingEmail = await Medecin.findOne({ email });
 
-      if (!existingMatricule) {
-        return res.status(400).json({ error: "Matricule does'nt exist" });
-      } else if (existingMedecin) {
+      if (existingMedecin) {
         return res
           .status(400)
           .json({ error: "A doctor already used this data" });
@@ -280,7 +277,7 @@ module.exports = {
   NewcardId,
   bloquecardId,
   unblockcardId,
-  NouveauMedecin,
+  signupMedecin,
   newMatricule,
   bloqueMatricule,
   unblockMatricule,

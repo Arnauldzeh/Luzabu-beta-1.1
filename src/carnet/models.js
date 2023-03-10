@@ -53,27 +53,20 @@ const PersonalInfosSchema = new Schema({
 
 //Profile medical
 const ProfilMedicalSchema = new Schema({
-  age: {
-    type: String,
-    default: "N/A",
-  },
   height: {
-    type: String,
-    default: "N/A",
+    type: Number,
   },
   weight: {
-    type: String,
-    default: "N/A",
+    type: Number,
   },
   bloodGroup: {
     type: String,
-    default: "N/A",
   },
 
   allergies: [
     {
-      type: { type: String, default: "N/A" },
-      manifestation: { type: String, default: "N/A" },
+      type: { type: String },
+      manifestation: { type: String },
     },
   ],
   chronicIllnesses: [String],
@@ -82,27 +75,21 @@ const ProfilMedicalSchema = new Schema({
     {
       name: {
         type: String,
-        default: "N/A",
       },
-      telephone: {
+      phoneNumber: {
         type: String,
-        default: "N/A",
       },
       profession: {
         type: String,
-        default: "N/A",
       },
       sex: {
         type: String,
-        default: "N/A",
       },
       address: {
         type: String,
-        default: "N/A",
       },
       link: {
         type: String,
-        default: "N/A",
       },
     },
   ],
@@ -116,9 +103,7 @@ const ConsultationSchema = new Schema({
   doctorName: {
     type: String,
   },
-  time: {
-    type: String,
-  },
+
   date: {
     type: Date,
     required: true,

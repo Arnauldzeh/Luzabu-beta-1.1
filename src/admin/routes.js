@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   NewcardId,
   bloquecardId,
-  NouveauMedecin,
+  signupMedecin,
   newMatricule,
   bloqueMatricule,
   unblockMatricule,
@@ -19,7 +19,7 @@ router.post("/blockcardId", bloquecardId);
 router.post("/unblockcardId", unblockcardId);
 
 //Ajouter un nouveau medecin dans le systeme
-router.post("/newDoctor", doctorUpload, NouveauMedecin);
+router.post("/signupDoctor", signupMedecin);
 //Ajouter un nouveau matricule medecin
 router.post("/matricule", newMatricule);
 //

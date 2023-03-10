@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const {
-  signup,
   signin,
   getMedecin,
   getPatient,
@@ -11,7 +10,7 @@ const {
 
 const { verifyToken } = require("../middleware/auth");
 
-router.post("/signup", signup); //bon👍
+// router.post("/signup", signup); //bon👍
 
 router.post("/signin", signin); //bon👍
 

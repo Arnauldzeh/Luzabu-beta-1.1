@@ -50,6 +50,10 @@ const PatientSchema = new Schema({
     type: [Notification.schema],
     default: [],
   },
+  blocked: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Patient = mongoose.model("Patients", PatientSchema);

@@ -7,118 +7,6 @@ const jwt = require("jsonwebtoken");
 const { Patient } = require("../patient/model");
 const { bloquer } = require("../admin/models");
 
-//Create neww Doctor
-const signup = async (req, res, next) => {
-  try {
-    let {
-      matricule,
-      firstName,
-      lastName,
-      email,
-      birthdate,
-      birthPlace,
-      sex,
-      nationality,
-      phoneNumber,
-      city,
-      qualification,
-      certificate,
-      hopitalName,
-      profilePicture,
-      password,
-      registrationDate,
-    } = req.body;
-
-    //removing blank spaces
-    matricule = matricule.trim();
-    firstName = firstName.trim();
-    lastName = lastName.trim();
-    email = email.trim();
-    birthPlace = birthPlace.trim();
-    sex = sex.trim();
-    nationality = nationality.trim();
-    phoneNumber = phoneNumber.trim();
-    city = city.trim();
-    qualification = qualification.trim();
-    hopitalName = hopitalName.trim();
-    registrationDate = registrationDate.trim();
-
-    //testing empty fields
-    if (
-      !(
-        matricule &&
-        firstName &&
-        lastName &&
-        email &&
-        birthdate &&
-        birthPlace &&
-        sex &&
-        nationality &&
-        phoneNumber &&
-        qualification &&
-        certificate &&
-        city &&
-        hopitalName &&
-        profilePicture &&
-        password &&
-        registrationDate
-      )
-    ) {
-      return res.status(400).json({ error: "Empty input fields!!!" });
-      // } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
-      //   return res.status(400).json({ error: "Invalid name!!!" });
-      // }
-    } else if (
-      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
-    ) {
-      return res.status(400).json({ error: "Invalid email!!!" });
-    } else if (password.length < 8) {
-      return res
-        .status(400)
-        .json({ error: "Password must contain atleast 8 caracters!!!" });
-    } else {
-      const existingMedecin = await Medecin.findOne({ matricule });
-      const existingEmail = await Medecin.findOne({ email });
-
-      if (existingMedecin) {
-        return res
-          .status(400)
-          .json({ error: "A doctor already used this data" });
-      } else if (existingEmail) {
-        return res.status(400).json({ error: "email already used" });
-      }
-
-      //hash password with the cryptage function in the services folder
-      const hashedPassword = await cryptage(password);
-      const newMedecin = new Medecin({
-        matricule,
-        firstName,
-        lastName,
-        email,
-        birthdate,
-        birthPlace,
-        sex,
-        nationality,
-        phoneNumber,
-        qualification,
-        certificate,
-        city,
-        hopitalName,
-        profilePicture,
-        password: hashedPassword,
-        registrationDate,
-      });
-      const addedDoctor = await newMedecin.save();
-      return res
-        .status(200)
-        .json({ message: "User registered successfully", addedDoctor });
-    }
-  } catch (error) {
-    console.log({ message: error });
-    return res.status(500).json({ error: "An error occured" });
-  }
-};
-
 const signin = async (req, res) => {
   try {
     let { matricule, password } = req.body;
@@ -158,8 +46,7 @@ const signin = async (req, res) => {
 const getMedecin = async (req, res) => {
   try {
     //vérification de l'identité du médecin par son matricule entré
-    const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
+    const token = req.headers.authorization.split(" ")[1];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -183,8 +70,7 @@ const getMedecin = async (req, res) => {
 const updateMedecin = async (req, res) => {
   try {
     //vérification de l'identité du médecin par son matricule entré
-    const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
+    const token = req.headers.authorization.split(" ")[1];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
     }
@@ -272,12 +158,11 @@ const updateMedecin = async (req, res) => {
 // RECUPERER L'OBJET PATIENT
 const getPatient = async (req, res) => {
   try {
-    const { cardId } = req.body;
+    const { cardId } = req.params;
     const patient = await Patient.findOne({ cardId });
     const isBlockedCardId = await bloquer.findOne({ cardId });
 
-    const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
+    const token = req.headers.authorization.split(" ")[1];
 
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
@@ -316,8 +201,7 @@ const updatePatient = async (req, res) => {
     const fetchedPatient = await Patient.findOne({ cardId });
     const isBlockedCardId = await bloquer.findOne({ cardId });
 
-    const token =
-      req.body.token || req.query.token || req.headers["x-access-token"];
+    const token = req.headers.authorization.split(" ")[1];
 
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
@@ -327,8 +211,6 @@ const updatePatient = async (req, res) => {
     const medecin = await Medecin.findOne({
       matricule: decodedToken.matricule,
     });
-
-    //
 
     if (!medecin) {
       return res.status(404).send("No Doctor found!!");
@@ -362,7 +244,6 @@ const updatePatient = async (req, res) => {
 };
 
 module.exports = {
-  signup,
   signin,
   getMedecin,
   getPatient,
