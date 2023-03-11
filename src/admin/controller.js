@@ -264,7 +264,7 @@ const signupMedecin = async (req, res, next) => {
       const addedDoctor = await newMedecin.save();
       return res
         .status(200)
-        .json({ message: "User registered successfully", addedDoctor });
+        .json({ message: "User registered successfully" });
     }
   } catch (error) {
     console.log({ message: error });
