@@ -35,6 +35,7 @@ const signin = async (req, res) => {
       return res.status(200).json({
         token,
         message: "User login successfully",
+        fetchedMedecin
       });
     }
   } catch (error) {
