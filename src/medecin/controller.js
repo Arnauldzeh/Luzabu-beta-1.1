@@ -195,12 +195,61 @@ const getPatient = async (req, res) => {
   }
 };
 
+// //MISE A JOUR DU PATIENT
+// const updatePatient = async (req, res) => {
+//   try {
+//     const { cardId, ...updateData } = req.body;
+//     const fetchedPatient = await Patient.findOne({ cardId });
+//     const isBlockedCardId = await bloquer.findOne({ cardId });
+
+//     const token = req.headers.authorization.split(" ")[1];
+
+//     if (!token) {
+//       return res.status(401).send("Authentication token is required!!");
+//     }
+
+//     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
+//     const medecin = await Medecin.findOne({
+//       matricule: decodedToken.matricule,
+//     });
+
+//     if (!medecin) {
+//       return res.status(404).send("No Doctor found!!");
+//     } else {
+//       if (!fetchedPatient) {
+//         console.log("Returning error: No Patient found!!");
+//         return res.status(404).json({ error: "No Patient found!!" });
+//       } else if (isBlockedCardId) {
+//         console.log("Returning error: This account has been suspended!!");
+//         return res
+//           .status(400)
+//           .json({ error: "This account has been suspended!!" });
+//       } else {
+//         const updatedPatient = await Patient.findOneAndUpdate(
+//           { cardId },
+//           { $push: updateData },
+//           { new: true }
+//         );
+//         return res.status(200).json({
+//           message: "Patient updated successfully",
+//           NewPatient: updatedPatient,
+//         });
+//       }
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res
+//       .status(500)
+//       .json({ message: "Internal server error", error: error });
+//   }
+// };
+
 //MISE A JOUR DU PATIENT
 const updatePatient = async (req, res) => {
   try {
-    const { cardId, ...updateData } = req.body;
-    const fetchedPatient = await Patient.findOne({ cardId });
-    const isBlockedCardId = await bloquer.findOne({ cardId });
+    // const { cardId } = req.body;
+    const { patient } = req.body;
+    const fetchedPatient = await Patient.findOne({ cardId: patient.cardId });
 
     const token = req.headers.authorization.split(" ")[1];
 
@@ -219,15 +268,10 @@ const updatePatient = async (req, res) => {
       if (!fetchedPatient) {
         console.log("Returning error: No Patient found!!");
         return res.status(404).json({ error: "No Patient found!!" });
-      } else if (isBlockedCardId) {
-        console.log("Returning error: This account has been suspended!!");
-        return res
-          .status(400)
-          .json({ error: "This account has been suspended!!" });
       } else {
         const updatedPatient = await Patient.findOneAndUpdate(
-          { cardId },
-          { $push: updateData },
+          { cardId: patient.cardId },
+          { $set: patient },
           { new: true }
         );
         return res.status(200).json({
