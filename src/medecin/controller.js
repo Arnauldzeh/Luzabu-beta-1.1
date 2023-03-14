@@ -247,9 +247,9 @@ const getPatient = async (req, res) => {
 //MISE A JOUR DU PATIENT
 const updatePatient = async (req, res) => {
   try {
-    // const { cardId } = req.body;
+    const { cardId } = req.body;
     const { patient } = req.body;
-    const fetchedPatient = await Patient.findOne({ cardId: patient.cardId });
+    const fetchedPatient = await Patient.findOne({ cardId });
 
     const token = req.headers.authorization.split(" ")[1];
 
@@ -270,7 +270,7 @@ const updatePatient = async (req, res) => {
         return res.status(404).json({ error: "No Patient found!!" });
       } else {
         const updatedPatient = await Patient.findOneAndUpdate(
-          { cardId: patient.cardId },
+          { cardId },
           { $set: patient },
           { new: true }
         );
