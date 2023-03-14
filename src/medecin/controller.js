@@ -159,7 +159,7 @@ const updateMedecin = async (req, res) => {
 // RECUPERER L'OBJET PATIENT
 const getPatient = async (req, res) => {
   try {
-    const { cardId } = req.body;
+    const { cardId } = req.query;
     const patient = await Patient.findOne({ cardId });
     const isBlockedCardId = await bloquer.findOne({ cardId });
 
