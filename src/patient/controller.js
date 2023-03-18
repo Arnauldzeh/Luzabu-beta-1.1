@@ -117,43 +117,6 @@ const signup = async (req, res, next) => {
   }
 };
 
-// //signin
-// const signin = async (req, res) => {
-//   try {
-//     const { cardId, password } = req.body;
-//     const fetchedPatient = await Patient.findOne({ cardId });
-//     let isBlocked = fetchedPatient.blocked;
-
-//     if (isBlocked) {
-//       return res.status(401).json({
-//         message: "Access denied due to some reasons!!",
-//       });
-//     } else if (!fetchedPatient) {
-//       return res.status(400).json({ message: "Invalid credentials" });
-//     } else {
-//       const hashedPassword = fetchedPatient.userProfile.password;
-//       const passwordMatch = await verifyHashedData(password, hashedPassword);
-//       if (!passwordMatch) {
-//         return res.status(400).json({ message: "Invalid password" });
-//       }
-//       //generation du token en utilisant le matricule et l'identifiant de la bd
-//       const tokenData = {
-//         cardId: fetchedPatient.cardId,
-//         patientId: fetchedPatient._id,
-//       };
-//       const token = await createToken(tokenData);
-
-//       return res.status(200).json({
-//         token,
-//         message: "User login successfully",
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Caught error:", error);
-//     return res.status(500).json({ error });
-//   }
-// };
-
 const signin = async (req, res) => {
   try {
     const { cardId, password } = req.body;
