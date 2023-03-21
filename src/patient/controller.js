@@ -89,6 +89,7 @@ const signup = async (req, res, next) => {
       const hashedPassword = await cryptage(password);
       const newPatient = new Patient({
         cardId,
+        password: hashedPassword,
         userProfile: {
           firstName,
           lastName,
@@ -100,7 +101,6 @@ const signup = async (req, res, next) => {
           address,
           phoneNumber,
           profilePicture,
-          password: hashedPassword,
         },
       });
       await newPatient.save();
