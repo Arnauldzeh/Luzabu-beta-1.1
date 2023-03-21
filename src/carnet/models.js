@@ -88,7 +88,7 @@ const ProfilMedicalSchema = new Schema({
       address: {
         type: String,
       },
-      link: {
+      relationShip: {
         type: String,
       },
     },
@@ -107,7 +107,6 @@ const ConsultationSchema = new Schema({
   date: {
     type: Date,
     required: true,
-    default: Date.now,
   },
   age: {
     type: String,
@@ -159,7 +158,7 @@ const ExamenSchema = new Schema({
     type: String,
   },
   date: {
-    type: String,
+    type: Date,
   },
   patientCardId: {
     type: String,
@@ -184,7 +183,7 @@ const OrdonnanceSchema = new Schema({
     type: String,
   },
   date: {
-    type: String,
+    type: Date,
   },
   patientCardId: {
     type: String,
@@ -228,7 +227,7 @@ const ResultatsLaboSchema = new Schema({
     type: String,
   },
   date: {
-    type: String,
+    type: Date,
   },
   patientCardId: {
     type: String,
@@ -269,7 +268,7 @@ const RadiologieSchema = new Schema({
     type: String,
   },
   date: {
-    type: String,
+    type: Date,
   },
   patientCardId: {
     type: String,
@@ -311,7 +310,7 @@ const NotificationSchema = new Schema({
     type: String,
   },
   date: {
-    type: String,
+    type: Date,
   },
   activity: {
     type: String,
