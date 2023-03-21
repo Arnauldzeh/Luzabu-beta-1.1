@@ -17,6 +17,10 @@ const PatientSchema = new Schema({
     required: true,
     unique: true,
   },
+  password: {
+    type: String,
+    required: true,
+  },
   userProfile: {
     type: PersonalInfos,
     required: true,

@@ -133,7 +133,7 @@ const signin = async (req, res) => {
         .status(400)
         .json({ message: "Access denied due to some reasons!!" });
     } else {
-      const hashedPassword = fetchedPatient.userProfile.password;
+      const hashedPassword = fetchedPatient.password;
       const passwordMatch = await verifyHashedData(password, hashedPassword);
       if (!passwordMatch) {
         return res.status(400).json({ message: "Invalid password" });
