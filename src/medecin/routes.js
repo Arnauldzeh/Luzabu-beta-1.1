@@ -6,6 +6,7 @@ const {
   getPatient,
   updatePatient,
   updateMedecin,
+  getAllDoctor,
 } = require("./controller");
 
 const { verifyToken } = require("../middleware/auth");
@@ -22,4 +23,5 @@ router.get("/getPatient", verifyToken, getPatient); //bon👍
 
 router.put("/updatePatient", verifyToken, updatePatient); //bon👍
 
+router.get("/getAllDoctor", getAllDoctor); //bon👍
 module.exports = router;

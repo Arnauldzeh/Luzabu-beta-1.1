@@ -236,10 +236,23 @@ const updatePatient = async (req, res) => {
   }
 };
 
+//RECUPERER TOUT LES MEDECINS DU SYSTEME
+const getAllDoctor = async (req, res) => {
+  try {
+    const medecins = await Medecin.find({}); // récupérer tous les medecins de la base de données
+
+    return res.status(200).json(medecins); // renvoyer les medecins dans la réponse HTTP
+  } catch (error) {
+    console.error("Caught error:", error);
+    return res.status(500).send({ error: "An error occured" }); // gérer l'erreur
+  }
+};
+
 module.exports = {
   signin,
   getMedecin,
   getPatient,
   updatePatient,
   updateMedecin,
+  getAllDoctor,
 };
