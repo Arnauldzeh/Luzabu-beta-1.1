@@ -33,7 +33,6 @@ const PatientSchema = new Schema({
     type: [Consultation.schema],
     default: [],
   },
-
   prescriptions: {
     type: [Ordonnance.schema],
     default: [],

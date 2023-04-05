@@ -72,6 +72,10 @@ const medecinSchema = new Schema({
     type: Date,
     required: true,
   },
+  blocked: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Medecin = mongoose.model("Medecins", medecinSchema);

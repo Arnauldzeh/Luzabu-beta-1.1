@@ -1,22 +1,18 @@
 const { Medecin } = require("./model");
-const { bloquerMedecin } = require("../admin/models");
 const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
 const jwt = require("jsonwebtoken");
 //
 const { Patient } = require("../patient/model");
-const { bloquer } = require("../admin/models");
 
 const signin = async (req, res) => {
   try {
     let { matricule, password } = req.body;
     const fetchedMedecin = await Medecin.findOne({ matricule });
-    const isBlockedmatricule = await bloquerMedecin.findOne({ matricule });
 
-    if (isBlockedmatricule) {
-      return res.status(401).json({
-        message: "Access denied due to some reasons!!",
-      });
+    const isBlocked = fetchedMedecin.blocked;
+    if (isBlocked) {
+      return res.status(400).json({ message: "Access denied!!" });
     } else if (!fetchedMedecin) {
       return res.status(400).json({ message: "Invalid matricule" });
     } else {
@@ -35,7 +31,7 @@ const signin = async (req, res) => {
       return res.status(200).json({
         token,
         message: "User login successfully",
-        fetchedMedecin
+        fetchedMedecin,
       });
     }
   } catch (error) {
@@ -46,7 +42,7 @@ const signin = async (req, res) => {
 //Afficher son profile
 const getMedecin = async (req, res) => {
   try {
-    //vérification de l'identité du médecin par son matricule entré
+    //vérification de l'identité du médecin
     const token = req.headers.authorization.split(" ")[1];
     if (!token) {
       return res.status(401).send("Authentication token is required!!");
@@ -56,8 +52,10 @@ const getMedecin = async (req, res) => {
     const medecin = await Medecin.findOne({
       matricule: decodedToken.matricule,
     });
-
-    if (!medecin) {
+    const isBlocked = medecin.blocked;
+    if (isBlocked) {
+      return res.status(400).json({ message: "Access denied!!" });
+    } else if (!medecin) {
       return res.status(404).send("No Doctor found!!");
     } else {
       return res.status(200).json({ medecin });
@@ -81,8 +79,11 @@ const updateMedecin = async (req, res) => {
       matricule: decodedToken.matricule,
     });
 
+    const isBlocked = medecin.blocked;
     if (!medecin) {
       return res.status(404).json({ error: "User not found!!" });
+    } else if (isBlocked) {
+      return res.status(400).json({ message: "Access denied!!" });
     }
 
     let {
@@ -161,7 +162,6 @@ const getPatient = async (req, res) => {
   try {
     const { cardId } = req.query;
     const patient = await Patient.findOne({ cardId });
-    const isBlockedCardId = await bloquer.findOne({ cardId });
 
     const token = req.headers.authorization.split(" ")[1];
 
@@ -180,11 +180,8 @@ const getPatient = async (req, res) => {
       if (!patient) {
         console.log("Returning error: No Patient found!!");
         return res.status(404).json({ error: "No Patient found!!" });
-      } else if (isBlockedCardId) {
-        console.log("Returning error: This account has been suspended!!");
-        return res
-          .status(400)
-          .json({ error: "This account has been suspended!!" });
+      } else if (isBlocked) {
+        return res.status(400).json({ message: "Access denied!!" });
       } else {
         return res.status(200).json({ patient });
       }
@@ -215,21 +212,21 @@ const updatePatient = async (req, res) => {
 
     if (!medecin) {
       return res.status(404).send("No Doctor found!!");
+    } else if (isBlocked) {
+      return res.status(400).json({ message: "Access denied!!" });
+    } else if (!fetchedPatient) {
+      console.log("Returning error: No Patient found!!");
+      return res.status(404).json({ error: "No Patient found!!" });
     } else {
-      if (!fetchedPatient) {
-        console.log("Returning error: No Patient found!!");
-        return res.status(404).json({ error: "No Patient found!!" });
-      } else {
-        const updatedPatient = await Patient.findOneAndUpdate(
-          { cardId },
-          { $set: patient },
-          { new: true }
-        );
-        return res.status(200).json({
-          message: "Patient updated successfully",
-          NewPatient: updatedPatient,
-        });
-      }
+      const updatedPatient = await Patient.findOneAndUpdate(
+        { cardId },
+        { $set: patient },
+        { new: true }
+      );
+      return res.status(200).json({
+        message: "Patient updated successfully",
+        NewPatient: updatedPatient,
+      });
     }
   } catch (error) {
     console.error(error);

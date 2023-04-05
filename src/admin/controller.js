@@ -218,9 +218,6 @@ const signupMedecin = async (req, res, next) => {
       )
     ) {
       return res.status(400).json({ error: "Empty input fields!!!" });
-      // } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
-      //   return res.status(400).json({ error: "Invalid name!!!" });
-      // }
     } else if (
       !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
     ) {
@@ -262,9 +259,7 @@ const signupMedecin = async (req, res, next) => {
         registrationDate,
       });
       const addedDoctor = await newMedecin.save();
-      return res
-        .status(200)
-        .json({ message: "User registered successfully" });
+      return res.status(200).json({ message: "User registered successfully" });
     }
   } catch (error) {
     console.log({ message: error });

@@ -15,7 +15,7 @@ const verifyToken = async (req, res, next) => {
   } catch (error) {
     return res.status(401).send("Invalid Token provided");
   }
-  //le token etant valide
+  //le token etant valide...
   return next();
 };
 

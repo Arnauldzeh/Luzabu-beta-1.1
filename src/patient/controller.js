@@ -52,9 +52,6 @@ const signup = async (req, res, next) => {
     ) {
       console.log("Returning error: Empty input fields!!!");
       return res.status(400).json({ error: "Empty input fields!!!" });
-    } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
-      console.log("Returning error: Invalid name!!!");
-      return res.status(400).json({ error: "Invalid name!!!" });
     } else if (
       !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
     ) {
@@ -73,7 +70,6 @@ const signup = async (req, res, next) => {
       const existingEmail = await Patient.findOne({
         "userProfile.email": email,
       });
-
       if (!existingNewId) {
         console.log("Returning error: this card does'nt exist!!!");
         return res.status(400).json({ error: "this card does'nt exist" });
@@ -84,7 +80,6 @@ const signup = async (req, res, next) => {
         console.log("Returning error: email already used!!");
         return res.status(400).json({ error: "email already used" });
       }
-
       //hash password with the cryptage function in the services folder
       const hashedPassword = await cryptage(password);
       const newPatient = new Patient({
@@ -94,7 +89,7 @@ const signup = async (req, res, next) => {
           firstName,
           lastName,
           email,
-          birthdate, // yyyy/mm/dd
+          birthdate,
           sex,
           profession,
           nationality,
@@ -129,16 +124,14 @@ const signin = async (req, res) => {
     }
     const isBlocked = fetchedPatient.blocked;
     if (isBlocked) {
-      return res
-        .status(400)
-        .json({ message: "Access denied due to some reasons!!" });
+      return res.status(400).json({ message: "Access denied!!" });
     } else {
       const hashedPassword = fetchedPatient.password;
       const passwordMatch = await verifyHashedData(password, hashedPassword);
       if (!passwordMatch) {
-        return res.status(400).json({ message: "Invalid password" });
+        return res.status(400).json({ error: "Invalid credentials" });
       }
-      //generation du token en utilisant le matricule et l'identifiant de la bd
+      //generation du token en utilisant l'id de la carte cardId et l'identifiant de la bd
       const tokenData = {
         cardId: fetchedPatient.cardId,
         patientId: fetchedPatient._id,
@@ -166,18 +159,13 @@ const getPatient = async (req, res) => {
     }
     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
     const patient = await Patient.findOne({ cardId: decodedToken.cardId });
-    const isBlockedCardId = await bloquer.findOne({
-      cardId: decodedToken.cardId,
-    });
 
-    if (!patient) {
+    const isBlocked = fetchedPatient.blocked;
+    if (isBlocked) {
+      return res.status(400).json({ message: "Access denied!!" });
+    } else if (!patient) {
       console.log("Returning error: No Patient found!!");
       return res.status(404).json({ error: "No Patient found!!" });
-    } else if (isBlockedCardId) {
-      console.log("Returning error: This account has been suspended!!");
-      return res
-        .status(400)
-        .json({ error: "This account has been suspended!!" });
     } else {
       return res.status(200).json(patient);
     }
@@ -201,18 +189,12 @@ const updatePatient = async (req, res) => {
       cardId: decodedToken.cardId,
     });
     // console.log(decodedToken.cardId);
-    const isBlockedCardId = await bloquer.findOne({
-      cardId: decodedToken.cardId,
-    });
-
-    if (!fetchpatient) {
+    const isBlocked = fetchedPatient.blocked;
+    if (isBlocked) {
+      return res.status(400).json({ message: "Access denied!!" });
+    } else if (!fetchpatient) {
       console.log("Returning error: No Patient found!!");
       return res.status(404).json({ error: "No Patient found!!" });
-    } else if (isBlockedCardId) {
-      console.log("Returning error: This account has been suspended!!");
-      return res
-        .status(400)
-        .json({ error: "This account has been suspended!!" });
     } else if (!patient) {
       return res.status(400).json({ error: "Invalid update data" });
     }
@@ -235,10 +217,23 @@ const updatePatient = async (req, res) => {
   }
 };
 
+// RECUPERER TOUT LES PATIENTS DU SYSTEME
+const getAllPatient = async (req, res) => {
+  try {
+    const patients = await Patient.find({}); // récupérer tous les patients de la base de données
+
+    return res.status(200).json(patients); // renvoyer les patients dans la réponse HTTP
+  } catch (error) {
+    console.error("Caught error:", error);
+    return res.status(500).send({ error: "An error occured" }); // gérer l'erreur
+  }
+};
+
 //Exporter les fonctions
 module.exports = {
   signup,
   signin,
   getPatient,
   updatePatient,
+  getAllPatient,
 };
