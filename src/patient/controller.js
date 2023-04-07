@@ -160,7 +160,7 @@ const getPatient = async (req, res) => {
     const decodedToken = await jwt.verify(token, process.env.TOKEN_KEY);
     const patient = await Patient.findOne({ cardId: decodedToken.cardId });
 
-    const isBlocked = fetchedPatient.blocked;
+    const isBlocked = patient.blocked;
     if (isBlocked) {
       return res.status(400).json({ message: "Access denied!!" });
     } else if (!patient) {
