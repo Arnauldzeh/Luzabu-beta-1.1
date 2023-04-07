@@ -189,7 +189,7 @@ const updatePatient = async (req, res) => {
       cardId: decodedToken.cardId,
     });
     // console.log(decodedToken.cardId);
-    const isBlocked = fetchedPatient.blocked;
+    const isBlocked = fetchpatient.blocked;
     if (isBlocked) {
       return res.status(400).json({ message: "Access denied!!" });
     } else if (!fetchpatient) {
