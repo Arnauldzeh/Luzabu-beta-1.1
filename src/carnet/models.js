@@ -45,7 +45,6 @@ const PersonalInfosSchema = new Schema({
     type: String,
     required: true,
   },
-  
 });
 
 //Profile medical
@@ -85,7 +84,7 @@ const ProfilMedicalSchema = new Schema({
       address: {
         type: String,
       },
-      relationShip: {
+      relationship: {
         type: String,
       },
     },
