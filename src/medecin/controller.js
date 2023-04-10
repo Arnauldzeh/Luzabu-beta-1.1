@@ -52,10 +52,11 @@ const getMedecin = async (req, res) => {
     const medecin = await Medecin.findOne({
       matricule: decodedToken.matricule,
     });
-    const isBlocked = medecin.blocked;
-    if (isBlocked) {
-      return res.status(400).json({ message: "Access denied!!" });
-    } else if (!medecin) {
+    // const isBlocked = medecin.blocked;
+    // if (isBlocked) {
+    //   return res.status(400).json({ message: "Access denied!!" });
+    // } else
+    if (!medecin) {
       return res.status(404).send("No Doctor found!!");
     } else {
       return res.status(200).json({ medecin });
@@ -79,12 +80,13 @@ const updateMedecin = async (req, res) => {
       matricule: decodedToken.matricule,
     });
 
-    const isBlocked = medecin.blocked;
+    // const isBlocked = medecin.blocked;
     if (!medecin) {
       return res.status(404).json({ error: "User not found!!" });
-    } else if (isBlocked) {
-      return res.status(400).json({ message: "Access denied!!" });
     }
+    // else if (isBlocked) {
+    //   return res.status(400).json({ message: "Access denied!!" });
+    // }
 
     let {
       firstName,
@@ -180,8 +182,6 @@ const getPatient = async (req, res) => {
       if (!patient) {
         console.log("Returning error: No Patient found!!");
         return res.status(404).json({ error: "No Patient found!!" });
-      } else if (isBlocked) {
-        return res.status(400).json({ message: "Access denied!!" });
       } else {
         return res.status(200).json({ patient });
       }
@@ -212,8 +212,6 @@ const updatePatient = async (req, res) => {
 
     if (!medecin) {
       return res.status(404).send("No Doctor found!!");
-    } else if (isBlocked) {
-      return res.status(400).json({ message: "Access denied!!" });
     } else if (!fetchedPatient) {
       console.log("Returning error: No Patient found!!");
       return res.status(404).json({ error: "No Patient found!!" });
