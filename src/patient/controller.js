@@ -3,6 +3,7 @@ const { Identifiant, bloquer } = require("../admin/models");
 const { cryptage, verifyHashedData } = require("../services/cryptage");
 const { createToken } = require("../services/creerToken");
 const jwt = require("jsonwebtoken");
+const { validatePassword } = require("../services/validate");
 
 const signup = async (req, res, next) => {
   try {
@@ -79,6 +80,16 @@ const signup = async (req, res, next) => {
       } else if (existingEmail) {
         console.log("Returning error: email already used!!");
         return res.status(400).json({ error: "email already used" });
+      } else if (!validatePassword(password)) {
+        console.log(
+          "Returning error: Password must contain at least 8 characters"
+        );
+        return res
+          .status(400)
+          .json({
+            error:
+              "Password must contain at least 8 characters, including at least one uppercase letter, one lowercase letter, one number, and one special character",
+          });
       }
       //hash password with the cryptage function in the services folder
       const hashedPassword = await cryptage(password);

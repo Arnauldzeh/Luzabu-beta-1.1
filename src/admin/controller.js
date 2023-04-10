@@ -1,6 +1,7 @@
 const { Identifiant, bloquer, Matricule, bloquerMedecin } = require("./models");
 const { Medecin } = require("../medecin/model");
 const { cryptage } = require("../services/cryptage");
+const { validatePassword } = require("../services/validate");
 
 //Create neww patient
 const NewcardId = async (req, res) => {
@@ -236,6 +237,14 @@ const signupMedecin = async (req, res, next) => {
           .json({ error: "A doctor already used this data" });
       } else if (existingEmail) {
         return res.status(400).json({ error: "email already used" });
+      } else if (!validatePassword(password)) {
+        console.log(
+          "Returning error: Password must contain at least 8 characters"
+        );
+        return res.status(400).json({
+          error:
+            "Password must contain at least 8 characters, including at least one uppercase letter, one lowercase letter, one number, and one special character",
+        });
       }
 
       //hash password with the cryptage function in the services folder
