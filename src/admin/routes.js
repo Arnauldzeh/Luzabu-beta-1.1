@@ -8,7 +8,7 @@ const {
   bloqueMatricule,
   unblockMatricule,
   unblockcardId,
-} = require("./controller");
+} = require("../Controller/admin");
 const { doctorUpload } = require("../middleware/multer");
 
 //Ajouter une nouvelle carte de santé
